@@ -5,6 +5,8 @@ Twelve sections — content, accessibility (WCAG 2.2 AA), security headers, craw
 Lighthouse, error pages, metadata, legal, DNS, monitoring, QA, launch day. Ticks are stored
 in `localStorage`, so progress survives a reload and an install.
 
+Live at **https://onion2k.github.io/preflight/**
+
 ## Files
 
 | Path | What it is |
@@ -33,7 +35,11 @@ Chrome and Edge show an install button in the address bar, and the page also sho
 
 ## Deploying
 
-Static hosting, no build. Two things to get right on the host:
+GitHub Pages serves `main` from the repository root, so a push to `main` deploys. Every path
+in the app is relative, which is what lets it work from the `/preflight/` subpath as well as
+from a domain root.
+
+On any other static host, two things to get right:
 
 - Serve `sw.js` with `Cache-Control: no-cache` so update checks are not themselves cached.
 - Serve the whole thing over HTTPS, or the service worker will not register.
