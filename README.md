@@ -155,6 +155,19 @@ await tools["set-target"].execute({ url: "https://example.com" });
 await tools["next-check"].execute({ section: "security" });
 ```
 
+Driving them through the browser instead, from the page's own console: note that Chrome 149
+takes the arguments as a **JSON string**, while the spec has since moved to a plain object.
+
+```js
+const registered = await document.modelContext.getTools();
+const setTarget = registered.find(t => t.name === "set-target");
+await document.modelContext.executeTool(setTarget, '{"url": "https://example.com"}');
+```
+
+Each tool returns text, not an MCP `{ content: [...] }` envelope: the browser serialises the
+return value on the way to the agent, so an envelope would arrive as JSON for the model to
+unwrap before reading the sentence inside.
+
 ## Known trade-off
 
 The checklist is rendered by JavaScript, so with scripting disabled the page shows only a

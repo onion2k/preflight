@@ -1,7 +1,7 @@
 // Preflight for Launch — service worker.
 // Bump CACHE when the shell changes; the old cache is dropped on activate.
-const CACHE = "preflight-shell-v4";
-const RUNTIME = "preflight-runtime-v4";
+const CACHE = "preflight-shell-v5";
+const RUNTIME = "preflight-runtime-v5";
 
 const SHELL = [
   "./",
