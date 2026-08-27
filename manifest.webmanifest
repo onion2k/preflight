@@ -1,0 +1,28 @@
+{
+  "name": "Preflight for Launch",
+  "short_name": "Preflight",
+  "description": "A pre-launch checklist for websites: content, accessibility, security, crawler files, performance, error pages, legal and launch day.",
+  "id": "/preflight/",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#f7f8f6",
+  "theme_color": "#0d6b52",
+  "categories": ["productivity", "developer", "utilities"],
+  "lang": "en-GB",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Security headers", "url": "./#security" },
+    { "name": "Accessibility", "url": "./#a11y" },
+    { "name": "Launch day", "url": "./#day" }
+  ]
+}

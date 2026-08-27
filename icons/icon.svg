@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Preflight">
+  <rect x="23" y="23" width="466" height="466" rx="110" fill="#0d6b52"/>
+  <g stroke="#f7f8f6" stroke-linecap="round" fill="none">
+    <path d="M91 171h330" stroke-width="9" opacity=".16"/>
+    <path d="M91 256h330" stroke-width="9" opacity=".21"/>
+    <path d="M91 341h330" stroke-width="9" opacity=".26"/>
+    <path d="M96 272l106 122L421 128" stroke-width="66" stroke-linejoin="round"/>
+  </g>
+</svg>
