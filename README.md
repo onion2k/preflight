@@ -16,6 +16,8 @@ Live at **https://onion2k.github.io/preflight/**
 | `app.js` | Renders the checklist from that data and stores results. |
 | `webmcp.js` | Exposes the checklist to an AI agent as WebMCP tools. |
 | `pwa.js` | Install prompt, update prompt, online/offline status. |
+| `version.json` | The published build, fetched past the cache to detect a stale one. |
+| `tools/stamp.py` | Bumps the build across `sw.js`, `app.js` and `version.json` together. |
 | `manifest.webmanifest` | Name, icons, `standalone` display, theme colours, section shortcuts. |
 | `sw.js` | Service worker. Network-first for navigations, cache-first for local assets, stale-while-revalidate for webfonts. |
 | `icons/` | Generated PNG set plus the source `icon.svg`. |
@@ -94,7 +96,16 @@ agent-recorded result can be told apart from one you made yourself.
 Ticks saved by the earlier positional scheme (`chk-0`, `chk-1`, …) are migrated to ids once,
 on first load, using `LEGACY_ORDER` at the bottom of `checks.js`.
 
-After changing anything the service worker precaches, bump `CACHE` in `sw.js`.
+After changing anything the service worker precaches, stamp a new build:
+
+```bash
+python3 tools/stamp.py
+```
+
+That moves the cache name in `sw.js`, the `BUILD` constant in `app.js` and `version.json`
+together — they have to agree, and bumping them by hand is how you end up debugging a script
+the browser cached ten minutes ago. The footer shows the build that is actually executing, and
+turns amber with *"reload to update"* when the server has a newer one.
 
 ## Agent tools (WebMCP)
 

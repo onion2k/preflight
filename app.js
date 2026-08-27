@@ -5,6 +5,8 @@
 (function () {
   "use strict";
 
+  // Bumped by tools/stamp.py together with the service worker cache name and version.json.
+  const BUILD = "v6";
   const CHECKS = window.PREFLIGHT_CHECKS || [];
   const LEGACY_ORDER = window.PREFLIGHT_LEGACY_ORDER || [];
   const STORE = "preflight-results-v2";
@@ -354,4 +356,31 @@
 
   update();
   onScroll();
+
+  // ---------- which copy of the app am I actually running? ----------
+  //
+  // The service worker serves the shell cache-first, so an updated file can sit on the server
+  // while the browser keeps running the old one. The footer says which build is executing, and
+  // version.json — fetched past the cache — says which one the server has.
+
+  const stamp = document.getElementById("build");
+
+  function showBuild(text, stale) {
+    if (!stamp) return;
+    stamp.textContent = text;
+    stamp.classList.toggle("stale", !!stale);
+  }
+
+  showBuild("build " + BUILD);
+
+  fetch("./version.json?at=" + Date.now(), { cache: "no-store" })
+    .then(function (response) { return response.json(); })
+    .then(function (published) {
+      if (published.build && published.build !== BUILD) {
+        showBuild("build " + BUILD + " — " + published.build + " published, reload to update", true);
+      }
+    })
+    .catch(function () {
+      // Offline, or the file isn't there: the running build is all we can honestly report.
+    });
 })();

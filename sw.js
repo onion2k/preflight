@@ -1,8 +1,10 @@
 // Preflight for Launch — service worker.
 // Bump CACHE when the shell changes; the old cache is dropped on activate.
-const CACHE = "preflight-shell-v5";
-const RUNTIME = "preflight-runtime-v5";
+const CACHE = "preflight-shell-v6";
+const RUNTIME = "preflight-runtime-v6";
 
+// version.json is deliberately absent: it is fetched from the network to detect this cache
+// being stale, so caching it would defeat the point.
 const SHELL = [
   "./",
   "./index.html",
@@ -45,6 +47,14 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
+
+  // The staleness check has to bypass the cache it is checking.
+  if (url.pathname.endsWith("/version.json")) {
+    event.respondWith(fetch(request).catch(function () {
+      return new Response("{}", { headers: { "content-type": "application/json" } });
+    }));
+    return;
+  }
 
   // Navigations: network first so a deploy is picked up, cache as the offline floor.
   if (request.mode === "navigate") {
