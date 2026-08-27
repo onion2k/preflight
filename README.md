@@ -39,6 +39,11 @@ GitHub Pages serves `main` from the repository root, so a push to `main` deploys
 in the app is relative, which is what lets it work from the `/preflight/` subpath as well as
 from a domain root.
 
+Pages serves everything with `Cache-Control: max-age=600` and does not let you change it, so
+a new version can take up to ten minutes to reach someone who already has the app open. That
+is inside the 24-hour limit above which browsers bypass the HTTP cache for service worker
+update checks, so updates do arrive — just not instantly.
+
 On any other static host, two things to get right:
 
 - Serve `sw.js` with `Cache-Control: no-cache` so update checks are not themselves cached.
