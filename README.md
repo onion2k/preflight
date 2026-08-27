@@ -136,6 +136,16 @@ Brave's Leo, and in ChatGPT Desktop. Registration is behind a feature detect, so
 else the page behaves exactly as before and the tools are simply not offered — when they are,
 the header says so.
 
+This site carries an origin trial token in `index.html`, so the tools are live for ordinary
+Chrome and Edge visitors on <https://onion2k.github.io> **until 17 November 2026**. When it
+expires the API disappears and the page carries on as a plain checklist; renewing means
+registering a new token at the [trial page](https://developer.chrome.com/origintrials/#/register_trial/4163014905550602241)
+and replacing the `<meta http-equiv="origin-trial">` content. Tokens are origin-scoped — a
+fork on another domain needs its own, or the local flag below.
+
+Without a token, or on a fork, enable `chrome://flags/#enable-webmcp-testing` and relaunch.
+That switch is per-browser and applies to every origin.
+
 The tools are defined as data and exposed as `window.PreflightTools`, so they can be exercised
 in any browser console without the API present:
 
