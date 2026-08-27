@@ -11,6 +11,11 @@
   const LEGACY_STORE = "preflight-launch-v1";
 
   const VERIFY_LABEL = { agent: "agent-checkable", shared: "agent + you" };
+  const STATUS_LABEL = { done: "done", pass: "pass", fail: "fail", na: "not applicable" };
+  // A "fail" is a check that ran and did not pass — worse than untouched, so it never counts
+  // as settled and never ticks the box.
+  const SETTLED = { done: true, pass: true, na: true, fail: false };
+  const TARGET_STORE = "preflight-target-v1";
 
   const root = document.getElementById("checklist");
   const rail = document.querySelector("nav.rail");
@@ -23,6 +28,7 @@
 
   let agentOnly = false;
   const inputs = new Map();   // check id -> checkbox
+  const evidenceNodes = new Map(); // check id -> evidence line
   const rows = new Map();     // check id -> li
   const links = new Map();    // section id -> { a, count }
   const marks = new Map();    // section id -> scroll marker
@@ -60,6 +66,14 @@
   }
 
   let results = readResults();
+  let target = null;
+  try { target = localStorage.getItem(TARGET_STORE); } catch (e) {}
+
+  const listeners = [];
+  function changed() {
+    update();
+    listeners.forEach(function (fn) { try { fn(); } catch (e) {} });
+  }
 
   // ---------- rendering ----------
 
@@ -106,20 +120,30 @@
       task.appendChild(el("span", "tag verify " + item.verify, VERIFY_LABEL[item.verify]));
     }
 
+    const evidence = el("span", "evidence");
+    evidence.hidden = true;
+
     label.appendChild(input);
     label.appendChild(task);
     if (item.note) label.appendChild(el("span", "note", item.note));
     if (item.recipe) label.appendChild(el("span", "recipe", item.recipe));
+    label.appendChild(evidence);
 
     input.addEventListener("change", function () {
+      const prior = results[item.id];
       if (input.checked) {
+        // A person ticking a box always wins, but the agent's evidence is kept rather
+        // than silently dropped.
         results[item.id] = { status: "done", by: "you" };
+        if (prior && prior.evidence) results[item.id].evidence = prior.evidence;
       } else {
         delete results[item.id];
       }
       writeResults(results);
-      update();
+      changed();
     });
+
+    evidenceNodes.set(item.id, evidence);
 
     li.appendChild(label);
     inputs.set(item.id, input);
@@ -173,17 +197,49 @@
     return !agentOnly || item.verify !== "human";
   }
 
+  function paintRow(item) {
+    const record = results[item.id];
+    const li = rows.get(item.id);
+    const input = inputs.get(item.id);
+    const node = evidenceNodes.get(item.id);
+
+    if (record) li.dataset.status = record.status; else delete li.dataset.status;
+    input.checked = !!(record && SETTLED[record.status]);
+
+    if (record && record.evidence) {
+      node.hidden = false;
+      node.textContent = "";
+      node.appendChild(el("span", "verdict " + record.status, STATUS_LABEL[record.status] || record.status));
+      node.appendChild(document.createTextNode(" " + record.evidence + (record.note ? " — " + record.note : "")));
+      // Evidence outlives the agent's verdict: if you tick a check the agent failed, the
+      // finding stays on the page rather than disappearing.
+      node.appendChild(el("span", "who", record.by === "agent" ? "recorded by agent" : "agent evidence, settled by you"));
+    } else {
+      node.hidden = true;
+    }
+  }
+
+  function renderTarget() {
+    const node = document.getElementById("target");
+    if (!node) return;
+    node.hidden = !target;
+    if (target) node.innerHTML = "Checking <b>" + target.replace(/[<>&]/g, "") + "</b>";
+  }
+
   function update() {
+    renderTarget();
     let total = 0;
     let done = 0;
 
     CHECKS.forEach(function (section) {
+      section.items.forEach(paintRow);
       let localTotal = 0;
       let localDone = 0;
       section.items.forEach(function (item) {
         if (!inScope(item)) return;
         localTotal++;
-        if (results[item.id]) localDone++;
+        const record = results[item.id];
+        if (record && SETTLED[record.status]) localDone++;
       });
       total += localTotal;
       done += localDone;
@@ -252,8 +308,49 @@
     results = {};
     writeResults(results);
     inputs.forEach(function (input) { input.checked = false; });
-    update();
+    changed();
   });
+
+  // ---------- the interface the WebMCP tools drive ----------
+
+  function findCheck(id) {
+    for (let i = 0; i < CHECKS.length; i++) {
+      const found = CHECKS[i].items.find(function (item) { return item.id === id; });
+      if (found) return { check: found, section: CHECKS[i] };
+    }
+    return null;
+  }
+
+  window.Preflight = {
+    sections: CHECKS,
+    findCheck: findCheck,
+    allChecks: function () {
+      return CHECKS.flatMap(function (s) {
+        return s.items.map(function (item) { return Object.assign({ section: s.id }, item); });
+      });
+    },
+    getResult: function (id) { return results[id] || null; },
+    isSettled: function (id) { return !!(results[id] && SETTLED[results[id].status]); },
+    setResult: function (id, record) {
+      results[id] = record;
+      writeResults(results);
+      changed();
+    },
+    clearResult: function (id) {
+      delete results[id];
+      writeResults(results);
+      changed();
+    },
+    getTarget: function () { return target; },
+    setTarget: function (url) {
+      target = url;
+      try {
+        if (url) localStorage.setItem(TARGET_STORE, url); else localStorage.removeItem(TARGET_STORE);
+      } catch (e) {}
+      changed();
+    },
+    onChange: function (fn) { listeners.push(fn); }
+  };
 
   update();
   onScroll();

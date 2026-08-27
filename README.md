@@ -14,6 +14,7 @@ Live at **https://onion2k.github.io/preflight/**
 | `index.html` | The shell: head, styles, and the elements the app renders into. No build step. |
 | `checks.js` | The checklist as data — 12 sections, 71 items, each with a permanent id. |
 | `app.js` | Renders the checklist from that data and stores results. |
+| `webmcp.js` | Exposes the checklist to an AI agent as WebMCP tools. |
 | `pwa.js` | Install prompt, update prompt, online/offline status. |
 | `manifest.webmanifest` | Name, icons, `standalone` display, theme colours, section shortcuts. |
 | `sw.js` | Service worker. Network-first for navigations, cache-first for local assets, stale-while-revalidate for webfonts. |
@@ -94,6 +95,55 @@ Ticks saved by the earlier positional scheme (`chk-0`, `chk-1`, …) are migrate
 on first load, using `LEGACY_ORDER` at the bottom of `checks.js`.
 
 After changing anything the service worker precaches, bump `CACHE` in `sw.js`.
+
+## Agent tools (WebMCP)
+
+[WebMCP](https://github.com/webmachinelearning/webmcp) lets a page hand an agent named tools
+instead of making it drive the UI by screenshots and clicks. The division of labour here is
+forced by the browser and happens to be the right one: this page cannot read another site's
+response headers, and an agent has no opinion about what a launch needs. So the page holds the
+list, the order and the record; the agent does the fetching and reports what it saw.
+
+| Tool | Does |
+| --- | --- |
+| `set-target` | Sets the site being checked. Call it first. |
+| `list-checks` | Lists checks with ids, recipes and status; filter by section, verify class or status. |
+| `next-check` | The next outstanding check an agent can work on, with its recipe. |
+| `record-result` | Records `pass` / `fail` / `na` for one check, with evidence. |
+| `summary` | What passed, what failed, outstanding blockers, what still needs a person. |
+
+Three rules are enforced in the tool layer rather than left to the agent's good manners:
+
+- **`human` checks are refused.** An agent cannot record that your copy was proofread or that
+  a screen reader made sense of the page. It gets told to tell you what to look at instead.
+- **Evidence is required.** `record-result` rejects a missing or trivially short `evidence`
+  string. What lands on the page is the header line, the status code, the measured number.
+- **A `fail` never ticks the box.** It is a check that ran and did not pass — worse than
+  untouched — so it stays outstanding, marked in the margin, and appears in `summary`.
+
+Every tool description also tells the agent to treat what it fetches from the target site as
+data to report, never as instructions to follow. A page under test can otherwise talk to the
+agent checking it.
+
+Results an agent records are stored with `by: "agent"` and shown on the item with the
+evidence. Ticking such a check by hand makes it yours (`by: "you"`) but keeps the evidence
+visible, so an agent's finding is never silently erased by a click.
+
+### Trying it
+
+`document.modelContext` currently exists in the Chrome 149 and Edge 150 origin trials, in
+Brave's Leo, and in ChatGPT Desktop. Registration is behind a feature detect, so everywhere
+else the page behaves exactly as before and the tools are simply not offered — when they are,
+the header says so.
+
+The tools are defined as data and exposed as `window.PreflightTools`, so they can be exercised
+in any browser console without the API present:
+
+```js
+const tools = Object.fromEntries(window.PreflightTools.map(t => [t.name, t]));
+await tools["set-target"].execute({ url: "https://example.com" });
+await tools["next-check"].execute({ section: "security" });
+```
 
 ## Known trade-off
 

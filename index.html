@@ -384,6 +384,58 @@
   .btn[aria-pressed="true"]:hover { color: var(--panel); }
   section.block[hidden], nav.rail a[hidden], .scrolltrack .mark[hidden] { display: none; }
 
+  .status.agent.live { color: var(--go); }
+  .target {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-2);
+    margin: 0;
+    padding: 8px 12px;
+    background: var(--go-soft);
+    border-radius: 6px;
+    align-self: flex-start;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .target b { font-weight: 500; color: var(--ink); }
+  .evidence {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: .78rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--rule-2);
+    border-radius: 6px;
+    max-width: 72ch;
+  }
+  .evidence .verdict {
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    color: var(--ink-2);
+  }
+  .evidence .verdict.pass { background: var(--go-soft); color: var(--go); }
+  .evidence .verdict.fail { background: var(--hold-soft); color: var(--stop); }
+  .evidence[hidden] { display: none; }
+  .evidence .who {
+    flex: 1 1 100%;
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  li[data-status="fail"] { box-shadow: inset 3px 0 0 var(--stop); }
+  li[data-status="fail"] .task { color: var(--ink); }
+
   .callout {
     border: 1px solid var(--rule);
     border-left: 4px solid var(--hold);
@@ -505,6 +557,7 @@
     <div class="eyebrow">Pre-launch checks &middot; run top to bottom</div>
     <h1>Preflight for Launch</h1>
     <p class="standfirst">Everything worth checking before a site is public, grouped by the person who usually owns it. Items marked <span class="tag block">blocker</span> are the ones that hurt after launch, not before &mdash; wrong content in a search index, a missing security header, a 404 that returns&nbsp;200. Your ticks are saved in this browser.</p>
+    <p class="target" id="target" hidden></p>
     <div class="meterbar">
       <div class="meter" role="progressbar" aria-label="Checklist progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><span id="meterfill"></span></div>
       <div class="tally" id="tally">0 / 0 checked</div>
@@ -512,6 +565,7 @@
       <button class="btn" type="button" id="filter" aria-pressed="false">Agent-checkable only</button>
       <button class="btn" type="button" id="reset">Reset all</button>
       <span class="status" id="netstatus" role="status"></span>
+      <span class="status agent" id="agentstatus" role="status" hidden></span>
     </div>
   </header>
 
@@ -547,6 +601,7 @@
 
 <script src="./checks.js" defer></script>
 <script src="./app.js" defer></script>
+<script src="./webmcp.js" defer></script>
 <script src="./pwa.js" defer></script>
 
 </body>
