@@ -354,6 +354,36 @@
   .tag.block { background: var(--hold-soft); color: var(--hold); }
   .tag.ifapp { background: var(--panel-2); color: var(--ink-3); }
 
+  .tag.verify {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--ink-3);
+  }
+  .tag.verify.agent { border-color: var(--go); color: var(--go); }
+  .recipe {
+    grid-column: 2;
+    display: none;
+    font-family: var(--mono);
+    font-size: .78rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+    background: var(--panel-2);
+    border-left: 2px solid var(--go);
+    border-radius: 0 4px 4px 0;
+    padding: 7px 10px;
+    margin-top: 6px;
+    max-width: 72ch;
+  }
+  body.agent-only .recipe { display: block; }
+  body.agent-only li[data-verify="human"] { display: none; }
+  .btn[aria-pressed="true"] {
+    color: var(--panel);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .btn[aria-pressed="true"]:hover { color: var(--panel); }
+  section.block[hidden], nav.rail a[hidden], .scrolltrack .mark[hidden] { display: none; }
+
   .callout {
     border: 1px solid var(--rule);
     border-left: 4px solid var(--hold);
@@ -403,7 +433,6 @@
     justify-content: space-between;
   }
   footer.foot span { font-family: var(--mono); font-size: 12px; }
-
 
   /* ---------- scroll progress ---------- */
   .scrolltrack {
@@ -480,6 +509,7 @@
       <div class="meter" role="progressbar" aria-label="Checklist progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><span id="meterfill"></span></div>
       <div class="tally" id="tally">0 / 0 checked</div>
       <button class="btn primary" type="button" id="install" hidden>Install app</button>
+      <button class="btn" type="button" id="filter" aria-pressed="false">Agent-checkable only</button>
       <button class="btn" type="button" id="reset">Reset all</button>
       <span class="status" id="netstatus" role="status"></span>
     </div>
@@ -491,231 +521,21 @@
     </nav>
 
     <main>
+      <div id="checklist"></div>
 
-      <section class="block" id="content">
-        <div class="blockhead">
-          <h2>Content and copy</h2>
-          <div class="sig">01</div>
-          <p>The cheapest bugs to fix now and the most embarrassing ones later. Read the live build, not the CMS preview.</p>
+      <noscript>
+        <div class="callout">
+          <h3>This checklist needs JavaScript</h3>
+          <p>The checks are stored as data and rendered by the page, so an agent can be handed
+          the same list a person sees. Without JavaScript there is nothing to render — every
+          check is in <code>checks.js</code>, which reads perfectly well on its own.</p>
         </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">No placeholder text anywhere <span class="tag block">blocker</span></span><span class="note">Grep the build output for <code>lorem</code>, <code>TODO</code>, <code>FIXME</code>, <code>example.com</code>, <code>Coming soon</code>, <code>@test</code>, and your own scratch words.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Every page proofread by a person who did not write it</span><span class="note">Spelling, grammar, and consistent product naming. Machine spellcheck misses the wrong-word-spelled-right class of error entirely.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Facts, prices, dates and names verified against a source</span><span class="note">Anything numeric, legal, or about a real person. Check copyright years update automatically rather than being hardcoded.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Every internal and external link resolves</span><span class="note">Crawl the built site rather than clicking. Watch for links to staging hosts, localhost, and unpublished drafts.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Images are the right image, sized and compressed</span><span class="note">Correct crop at every breakpoint, modern format with a fallback, explicit <code>width</code>/<code>height</code> to stop layout shift, and no 4MB hero.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Contact details, addresses and social handles are current</span><span class="note">Send a test to every address and phone number that appears on the site. Dead mailboxes lose real enquiries silently.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Content that must not be public is not published</span><span class="note">Draft posts, internal notes, client names under embargo, test users, seeded data, source maps and comments left in the markup.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Dates, currency, units and language match the audience</span><span class="note">Including <code>&lt;html lang&gt;</code>, and <code>hreflang</code> if you ship more than one locale.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="a11y">
-        <div class="blockhead">
-          <h2>Accessibility &mdash; WCAG 2.2 AA</h2>
-          <div class="sig">02</div>
-          <p>Pick the standard explicitly and write it down. WCAG 2.2 Level AA is the usual commitment and what most procurement and legislation (EN 301 549, ADA Title II, the European Accessibility Act) actually reference. Automated tools catch roughly a third of issues; the rest is the manual list below.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Automated scan clean on every template <span class="tag block">blocker</span></span><span class="note">axe DevTools, Pa11y or Lighthouse across one instance of each layout &mdash; not just the homepage. Zero criticals and serious issues.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Whole site operable by keyboard alone</span><span class="note">Tab through every page. Focus order follows reading order, focus is always visible (2.4.11/2.4.13), nothing traps focus, and modals return focus on close.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Tested with a real screen reader</span><span class="note">VoiceOver + Safari and NVDA + Firefox as a baseline. Listen to a form submission and an error state end to end.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Colour contrast passes AA</span><span class="note">4.5:1 for body text, 3:1 for large text and for UI components and focus indicators (1.4.11). Check both themes and hover/disabled states.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Semantic structure and landmarks</span><span class="note">One <code>h1</code> per page, no skipped heading levels, real <code>&lt;nav&gt;</code>/<code>&lt;main&gt;</code>/<code>&lt;footer&gt;</code>, a skip link, and list markup for lists.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Images, icons and media described</span><span class="note">Meaningful <code>alt</code>, empty <code>alt=""</code> for decoration, accessible names on icon-only buttons, captions and transcripts for video and audio.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Forms labelled, and errors explain the fix</span><span class="note">Every control has a visible label, errors are announced and text-based (not colour alone), and required/format hints appear before submission.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Zoom, reflow and motion</span><span class="note">200% zoom and a 320px viewport with no horizontal scroll or clipped content; <code>prefers-reduced-motion</code> honoured; nothing autoplays with sound.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Accessibility statement published <span class="tag ifapp">if required</span></span><span class="note">Named standard, known gaps, contact route for problems, and the date last reviewed. Legally required for public sector bodies in the UK and EU.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="security">
-        <div class="blockhead">
-          <h2>Security headers and hardening</h2>
-          <div class="sig">03</div>
-          <p>Set these at the edge (host config, CDN, or <code>netlify.toml</code>/<code>_headers</code>) rather than in markup &mdash; several of them are ignored when they arrive in a <code>&lt;meta&gt;</code> tag. Verify against the live response, not the config file.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Content-Security-Policy in enforcing mode <span class="tag block">blocker</span></span><span class="note">No <code>unsafe-inline</code> for scripts &mdash; use nonces or hashes. Include <code>object-src 'none'</code>, <code>base-uri 'self'</code>, <code>frame-ancestors</code>, and a <code>report-uri</code>/<code>report-to</code> endpoint you actually watch. Ship in report-only first, then flip.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">HSTS with a long max-age</span><span class="note"><code>max-age=31536000; includeSubDomains</code>, plus <code>preload</code> once you are sure every subdomain is HTTPS-only &mdash; preload is slow to undo.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">The rest of the header set</span><span class="note"><code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy: strict-origin-when-cross-origin</code>, <code>Permissions-Policy</code> denying camera/mic/geolocation you don't use, <code>Cross-Origin-Opener-Policy: same-origin</code>.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">TLS correct and renewing automatically</span><span class="note">Valid chain, TLS 1.2+, HTTP redirects to HTTPS, no mixed content, and a calendar reminder before expiry even with auto-renewal. Grade it with SSL Labs.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Secrets are not in the bundle or the repo <span class="tag block">blocker</span></span><span class="note">Search the built output for keys and tokens. Rotate anything that was ever committed &mdash; history is public the moment the repo is.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Third-party scripts justified and pinned</span><span class="note">Every embed is a supply chain. Use <code>integrity</code> hashes where you can, self-host where you can't, and delete the ones nobody asked for.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Cookies and sessions configured <span class="tag ifapp">if applicable</span></span><span class="note"><code>Secure</code>, <code>HttpOnly</code>, <code>SameSite</code>; sensible expiry; CSRF protection on state-changing requests.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Admin and staging not reachable</span><span class="note">Staging behind auth and <code>noindex</code>, default credentials changed, directory listing off, dependency audit clean, rate limiting on forms and login.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Server does not advertise its version</span><span class="note">Trim <code>Server</code>, <code>X-Powered-By</code> and framework banners. Free information for anyone scanning.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="files">
-        <div class="blockhead">
-          <h2>Files crawlers and agents look for</h2>
-          <div class="sig">04</div>
-          <p>All served from the domain root with the right content type. Request each one from the production URL &mdash; a redirect or an HTML 404 body counts as broken.</p>
-        </div>
-        <div class="tablewrap">
-          <table>
-            <thead><tr><th>File</th><th>Why it matters</th></tr></thead>
-            <tbody>
-              <tr><td>/robots.txt</td><td>Must not still say <code>Disallow: /</code> from staging. Point it at your sitemap. Decide, deliberately, which AI crawlers you allow.</td></tr>
-              <tr><td>/sitemap.xml</td><td>Canonical URLs only, no redirects or noindexed pages, correct <code>lastmod</code>. Split by index file above 50k URLs.</td></tr>
-              <tr><td>/llms.txt</td><td>A Markdown map of the site for language models: what it is, and links to the pages worth reading. Optional, cheap, increasingly expected.</td></tr>
-              <tr><td>/.well-known/security.txt</td><td>How to report a vulnerability, with an <code>Expires</code> field. Prevents researchers guessing at your Twitter DMs.</td></tr>
-              <tr><td>/favicon.ico</td><td>Plus SVG icon, apple-touch-icon and a web manifest with the right theme colours if you want an installable app.</td></tr>
-              <tr><td>/humans.txt</td><td>Credit the people who built it. Entirely optional, still nice.</td></tr>
-              <tr><td>/ads.txt</td><td>Only if you sell advertising. Wrong or stale entries cost revenue.</td></tr>
-              <tr><td>/feed.xml</td><td>RSS or Atom if you publish anything serially. Validate it, and link it from <code>&lt;head&gt;</code>.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <ul class="items" style="border-top:1px solid var(--rule-2)">
-          <li><label class="item"><input type="checkbox"><span class="task">Each of the files above is present or consciously skipped <span class="tag block">blocker</span></span><span class="note">Especially <code>robots.txt</code> &mdash; a staging disallow shipped to production is the single most common launch mistake.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">No page is accidentally <code>noindex</code></span><span class="note">Check both the meta tag and the <code>X-Robots-Tag</code> header on the live response.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="perf">
-        <div class="blockhead">
-          <h2>Performance and Lighthouse</h2>
-          <div class="sig">05</div>
-          <p>Run against the production build on a throttled mobile profile, three times, and take the median &mdash; a single local run flatters you. Set a target and treat it as a gate, not a score to admire.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Lighthouse &ge; 90 on all four categories for key templates</span><span class="note">Performance, Accessibility, Best Practices, SEO. Home, a content page, and any conversion page at minimum.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Core Web Vitals inside the good thresholds</span><span class="note">LCP under 2.5s, INP under 200ms, CLS under 0.1. Lab numbers first; switch to field data from CrUX once traffic arrives.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Caching and compression on at the edge</span><span class="note">Brotli or gzip, long <code>Cache-Control</code> with hashed filenames for static assets, short or revalidated for HTML, CDN in front.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">The critical request chain is short</span><span class="note">Fonts preloaded and <code>font-display: swap</code>, no render-blocking third parties, JavaScript deferred, above-the-fold CSS inline if it helps.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Page weight is defensible on a slow connection</span><span class="note">Load it once on real 3G or a throttled profile. If you would not wait, neither will anyone else.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">A performance budget is recorded in CI <span class="tag ifapp">if applicable</span></span><span class="note">Lighthouse CI or bundle-size limits, so the next change has to argue with a number rather than a memory.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="errors">
-        <div class="blockhead">
-          <h2>Error and edge-case pages</h2>
-          <div class="sig">06</div>
-          <p>Each needs the correct status code as well as a designed page. A pretty 404 served with a 200 pollutes search indexes and hides broken links from every tool you own.</p>
-        </div>
-        <div class="tablewrap">
-          <table>
-            <thead><tr><th>Status</th><th>Needs</th></tr></thead>
-            <tbody>
-              <tr><td>404</td><td>Site navigation, search, and a link home. Must return <code>404</code>. Test a deep nonsense URL, not just <code>/404</code>.</td></tr>
-              <tr><td>500</td><td>A static page that renders when the app is down &mdash; no database, no API, no build step.</td></tr>
-              <tr><td>403 / 401</td><td>If anything is gated: explain whether to sign in, request access, or give up.</td></tr>
-              <tr><td>410</td><td>For content deliberately removed, so crawlers drop it instead of retrying.</td></tr>
-              <tr><td>503</td><td>Maintenance page with <code>Retry-After</code>, used during planned downtime.</td></tr>
-              <tr><td>Offline</td><td>If you register a service worker &mdash; and check the worker's update path before launch, not after.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <ul class="items" style="border-top:1px solid var(--rule-2)">
-          <li><label class="item"><input type="checkbox"><span class="task">Status codes verified with <code>curl -I</code> on production <span class="tag block">blocker</span></span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Error pages are styled, and work when the CDN is the thing failing</span><span class="note">Inline the CSS on the 500 page. A stylesheet request that also fails leaves an unstyled apology.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Errors are logged and someone is alerted</span><span class="note">Client-side error tracking as well as server logs, with a threshold that reaches a human.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="seo">
-        <div class="blockhead">
-          <h2>Metadata, SEO and sharing</h2>
-          <div class="sig">07</div>
-          <p>Everything here is per-page, not per-site. Templates that emit a single shared description are the usual failure.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Unique title and meta description on every page</span><span class="note">Roughly 55 and 155 characters. Check for duplicates across the whole crawl.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Canonical URLs are absolute and self-consistent</span><span class="note">One host wins &mdash; www or apex, not both &mdash; with 301s from the other. Trailing slashes consistent.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Open Graph and Twitter cards render</span><span class="note">Absolute image URL, 1200&times;630, under 5MB, with a title and description. Test in a real card validator, not by eye.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Structured data validates <span class="tag ifapp">if applicable</span></span><span class="note">Organization, Article, Product or BreadcrumbList through the Rich Results Test.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Redirects from the old site are mapped <span class="tag ifapp">on a relaunch</span></span><span class="note">301 every URL that had traffic or a backlink. Losing them is losing years of accumulated ranking.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Search Console and Bing Webmaster Tools verified</span><span class="note">Submit the sitemap, then check the coverage report a week later.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="legal">
-        <div class="blockhead">
-          <h2>Legal, licensing and policy</h2>
-          <div class="sig">08</div>
-          <p>Boring, quick, and the part that generates letters when it is missing.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Licence stated for content and for code</span><span class="note">They are usually different &mdash; for example CC BY-SA for writing, MIT for the source. Say it in the footer, in <code>LICENSE</code>, and in the repo.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Privacy policy matches what you actually collect <span class="tag block">blocker</span></span><span class="note">Name the analytics, the embeds, the mailing list, the legal basis, and the retention period. A template policy that lists tools you don't use is worse than none.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Cookie consent gates non-essential cookies before they are set</span><span class="note">If you set none, say so and skip the banner. Reject must be as easy as accept.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Terms of service, and any required company details</span><span class="note">In the UK and EU, registered company number, address and VAT number where they apply.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">You have the rights to every image, font and icon</span><span class="note">Keep the licences and receipts somewhere findable. Web fonts in particular are licensed by pageview more often than people expect.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Third-party attributions where the licence demands them</span><span class="note">Map tiles, open source components, photography credits.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="infra">
-        <div class="blockhead">
-          <h2>Domain, DNS and delivery</h2>
-          <div class="sig">09</div>
-          <p>Do the DNS work before launch day: TTLs and propagation mean these are the changes you cannot rush.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Domain registration and auto-renew confirmed <span class="tag block">blocker</span></span><span class="note">Owned by the organisation, not by a contractor's personal account. Registrar lock on, contact address monitored.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">DNS records complete, TTLs lowered before cutover</span><span class="note">Apex and www, CAA restricting who may issue certificates, and a plan to raise TTLs again once it is stable.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Email authentication set up <span class="tag ifapp">if the domain sends mail</span></span><span class="note">SPF, DKIM and DMARC &mdash; including on a domain that only sends transactional mail, or your forms land in spam.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Forms and transactional email tested end to end</span><span class="note">Submit each form on production. Confirm delivery, the reply-to address, spam filtering, validation errors and the thank-you state.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Backups exist and a restore has been tried</span><span class="note">An untested backup is a hypothesis. Restore into a scratch environment once.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Rollback path documented and timed</span><span class="note">Whoever is on call should know how to revert without reading the deploy tool's docs first.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="ops">
-        <div class="blockhead">
-          <h2>Measurement and monitoring</h2>
-          <div class="sig">10</div>
-          <p>Set up before launch, so the first day's traffic is data rather than anecdote.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Analytics installed, firing, and privacy-appropriate</span><span class="note">Verify events in real time on production. Exclude internal traffic. Prefer a tool that doesn't require a consent banner if you can.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Uptime monitoring with alerts that reach a person</span><span class="note">External check, more than one region, alerting somewhere you'll see at the weekend. Add a certificate-expiry check.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Error tracking wired to the release</span><span class="note">Source maps uploaded privately, releases tagged, so a spike points at a commit.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Conversion or goal tracking defined <span class="tag ifapp">if applicable</span></span><span class="note">Decide what success looks like now; retrofitting it loses the launch week.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="qa">
-        <div class="blockhead">
-          <h2>Cross-device QA and the last look</h2>
-          <div class="sig">11</div>
-          <p>On real devices where you can. Emulators hide touch targets, notches, keyboard behaviour and font rendering.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Chrome, Safari, Firefox and Edge, desktop and mobile</span><span class="note">Include an older Safari &mdash; iOS users update at their own pace.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">320px to ultrawide, portrait and landscape</span><span class="note">No horizontal scroll, no clipped text, tap targets at least 24&times;24 CSS pixels with spacing.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Dark mode, high contrast, and forced colours</span><span class="note">If you ship a theme toggle, check the un-toggled system default too.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Print stylesheet <span class="tag ifapp">if pages get printed</span></span><span class="note">Invoices, recipes, tickets, documentation. Cheap to add, obvious when missing.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">JavaScript disabled or failed: the page still says something</span><span class="note">At least core content and navigation. Also try with an aggressive ad blocker.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Someone outside the project does a five-minute walkthrough</span><span class="note">Give them a task, watch silently, write down where they hesitate. This finds more than the rest of the section.</span></label></li>
-        </ul>
-      </section>
-
-      <section class="block" id="day">
-        <div class="blockhead">
-          <h2>Launch day and the week after</h2>
-          <div class="sig">12</div>
-          <p>The checks that only make sense once the site is actually public.</p>
-        </div>
-        <ul class="items">
-          <li><label class="item"><input type="checkbox"><span class="task">Deploy from a clean, tagged build off the main branch</span><span class="note">Not from a laptop with uncommitted changes. Confirm the deployed commit hash matches what you reviewed.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Re-run the automated checks against production</span><span class="note">Headers, status codes, Lighthouse, link crawl. Configuration differs between environments more often than anyone expects.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Purge caches and confirm a cold visitor sees the new site</span><span class="note">CDN cache, service worker, and a private window from a different network.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Not launching into a Friday evening</span><span class="note">Whoever can fix it should be awake and available for the next few hours.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Watch errors, logs and 404s for the first week</span><span class="note">Real 404s tell you which redirects you missed. Fix them while the traffic still exists.</span></label></li>
-          <li><label class="item"><input type="checkbox"><span class="task">Diary a review date</span><span class="note">Thirty days out: revisit analytics, accessibility, dependency updates and the things you agreed to defer.</span></label></li>
-        </ul>
-      </section>
+      </noscript>
 
       <div class="callout">
         <h3>Two failures worth checking twice</h3>
         <p>The first is <code>robots.txt</code> carrying a staging <code>Disallow: /</code> into production &mdash; invisible on the site itself, and it costs weeks of indexing. The second is a 404 page that returns HTTP 200, which quietly disables every broken-link tool you own and fills search results with a page saying nothing was found. Both take ten seconds with <code>curl</code>.</p>
       </div>
-
     </main>
   </div>
 
@@ -725,215 +545,9 @@
   </footer>
 </div>
 
-<script>
-(function () {
-  var KEY = "preflight-launch-v1";
-  var boxes = Array.prototype.slice.call(document.querySelectorAll("label.item input"));
-  var sections = Array.prototype.slice.call(document.querySelectorAll("section.block"));
-  var rail = document.querySelector("nav.rail");
-  var meter = document.getElementById("meter");
-  var fill = document.getElementById("meterfill");
-  var tally = document.getElementById("tally");
-  var links = {};
-
-  boxes.forEach(function (b, i) { b.id = "chk-" + i; });
-
-  sections.forEach(function (s) {
-    var a = document.createElement("a");
-    a.href = "#" + s.id;
-    var name = document.createElement("span");
-    name.textContent = s.querySelector("h2").textContent.split(" — ")[0];
-    var count = document.createElement("span");
-    count.className = "count";
-    a.appendChild(name);
-    a.appendChild(count);
-    rail.appendChild(a);
-    links[s.id] = { a: a, count: count };
-  });
-
-
-  // scroll progress bar with a marker per section
-  var track = document.getElementById("scrolltrack");
-  var scrollfill = document.getElementById("scrollfill");
-  var marks = {};
-
-  sections.forEach(function (s) {
-    var m = document.createElement("a");
-    m.className = "mark";
-    m.href = "#" + s.id;
-    m.tabIndex = -1;
-    track.appendChild(m);
-    marks[s.id] = m;
-  });
-
-  function placeMarks() {
-    var range = document.documentElement.scrollHeight - window.innerHeight;
-    sections.forEach(function (s) {
-      var top = s.getBoundingClientRect().top + window.scrollY;
-      var pct = range > 0 ? Math.min(100, Math.max(0, (top / range) * 100)) : 0;
-      marks[s.id].style.left = pct + "%";
-    });
-  }
-
-  var ticking = false;
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    window.requestAnimationFrame(function () {
-      var range = document.documentElement.scrollHeight - window.innerHeight;
-      var pct = range > 0 ? Math.min(100, Math.max(0, (window.scrollY / range) * 100)) : 100;
-      scrollfill.style.width = pct + "%";
-      ticking = false;
-    });
-  }
-
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", function () { placeMarks(); onScroll(); });
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function () { placeMarks(); onScroll(); });
-  }
-  placeMarks();
-  onScroll();
-
-  function load() {
-    try {
-      var raw = localStorage.getItem(KEY);
-      if (!raw) return {};
-      return JSON.parse(raw) || {};
-    } catch (e) { return {}; }
-  }
-
-  function save(state) {
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
-  }
-
-  function render() {
-    var done = 0;
-    boxes.forEach(function (b) { if (b.checked) done++; });
-    var pct = boxes.length ? Math.round((done / boxes.length) * 100) : 0;
-    fill.style.width = pct + "%";
-    meter.setAttribute("aria-valuenow", String(pct));
-    tally.textContent = done + " / " + boxes.length + " checked · " + pct + "%";
-
-    sections.forEach(function (s) {
-      var local = Array.prototype.slice.call(s.querySelectorAll("label.item input"));
-      var n = local.filter(function (b) { return b.checked; }).length;
-      var link = links[s.id];
-      var complete = local.length > 0 && n === local.length;
-      link.count.textContent = n + "/" + local.length;
-      link.a.classList.toggle("done", complete);
-      var mark = marks[s.id];
-      mark.classList.toggle("done", complete);
-      mark.title = s.querySelector("h2").textContent + " — " + n + "/" + local.length;
-    });
-  }
-
-  var state = load();
-  boxes.forEach(function (b) { if (state[b.id]) b.checked = true; });
-  render();
-
-  boxes.forEach(function (b) {
-    b.addEventListener("change", function () {
-      var s = load();
-      if (b.checked) { s[b.id] = 1; } else { delete s[b.id]; }
-      save(s);
-      render();
-    });
-  });
-
-  document.getElementById("reset").addEventListener("click", function () {
-    boxes.forEach(function (b) { b.checked = false; });
-    save({});
-    render();
-  });
-})();
-</script>
-
-<script>
-// --- Progressive Web App wiring: install, updates, offline state ---
-(function () {
-  var installBtn = document.getElementById("install");
-  var status = document.getElementById("netstatus");
-  var deferredPrompt = null;
-
-  function setStatus(text, offline) {
-    status.textContent = text || "";
-    status.classList.toggle("offline", !!offline);
-  }
-
-  function reportConnection() {
-    if (navigator.onLine) {
-      setStatus(navigator.serviceWorker && navigator.serviceWorker.controller ? "Available offline" : "", false);
-    } else {
-      setStatus("Offline — checklist still working", true);
-    }
-  }
-
-  window.addEventListener("online", reportConnection);
-  window.addEventListener("offline", reportConnection);
-
-  // Chromium fires this when the app qualifies for installation.
-  window.addEventListener("beforeinstallprompt", function (e) {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.hidden = false;
-  });
-
-  installBtn.addEventListener("click", function () {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function () {
-      deferredPrompt = null;
-      installBtn.hidden = true;
-    });
-  });
-
-  window.addEventListener("appinstalled", function () {
-    deferredPrompt = null;
-    installBtn.hidden = true;
-    setStatus("Installed", false);
-  });
-
-  if (!("serviceWorker" in navigator)) { reportConnection(); return; }
-
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./sw.js").then(function (reg) {
-      reportConnection();
-
-      function watch(worker) {
-        if (!worker) return;
-        worker.addEventListener("statechange", function () {
-          if (worker.state === "installed" && navigator.serviceWorker.controller) offerUpdate(worker);
-        });
-      }
-
-      function offerUpdate(worker) {
-        setStatus("", false);
-        var btn = document.createElement("button");
-        btn.className = "btn primary";
-        btn.type = "button";
-        btn.textContent = "New version — reload";
-        btn.addEventListener("click", function () { worker.postMessage("skip-waiting"); });
-        status.parentNode.insertBefore(btn, status);
-      }
-
-      if (reg.waiting && navigator.serviceWorker.controller) offerUpdate(reg.waiting);
-      watch(reg.installing);
-      reg.addEventListener("updatefound", function () { watch(reg.installing); });
-    }).catch(function () {
-      // Registration fails on file:// and other insecure origins — the page still works.
-      reportConnection();
-    });
-
-    var reloading = false;
-    navigator.serviceWorker.addEventListener("controllerchange", function () {
-      if (reloading) return;
-      reloading = true;
-      window.location.reload();
-    });
-  });
-})();
-</script>
+<script src="./checks.js" defer></script>
+<script src="./app.js" defer></script>
+<script src="./pwa.js" defer></script>
 
 </body>
 </html>

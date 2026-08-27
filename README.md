@@ -11,7 +11,10 @@ Live at **https://onion2k.github.io/preflight/**
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | The whole app: markup, styles and behaviour in one file, no build step. |
+| `index.html` | The shell: head, styles, and the elements the app renders into. No build step. |
+| `checks.js` | The checklist as data — 12 sections, 71 items, each with a permanent id. |
+| `app.js` | Renders the checklist from that data and stores results. |
+| `pwa.js` | Install prompt, update prompt, online/offline status. |
 | `manifest.webmanifest` | Name, icons, `standalone` display, theme colours, section shortcuts. |
 | `sw.js` | Service worker. Network-first for navigations, cache-first for local assets, stale-while-revalidate for webfonts. |
 | `icons/` | Generated PNG set plus the source `icon.svg`. |
@@ -55,12 +58,46 @@ back to the system stacks and everything still works.
 
 ## Changing the checklist
 
-Edit the `<section class="block">` elements in `index.html`. Each item is one
-`<li><label class="item">` with a checkbox, a `.task` and an optional `.note`. The section
-rail, the progress meter and the scroll-bar markers are all built from the DOM at load, so
-adding or removing items needs no other change.
+Everything the page shows comes from `PREFLIGHT_CHECKS` in `checks.js`. Adding a check means
+adding an object to a section's `items` array — the section rail, the progress meter, the
+scroll markers and the filter all build themselves from the data at load.
 
-Checkbox state is keyed by index (`chk-0`, `chk-1`, …). Reordering items therefore shuffles
-existing saved ticks; bump `KEY` in `index.html` if that matters for a release.
+```js
+{
+  id: "security.csp",              // permanent; keys the saved result
+  task: "Content-Security-Policy in enforcing mode",
+  note: "No <code>unsafe-inline</code> for scripts …",
+  tag: { kind: "block", label: "blocker" },
+  verify: "agent",
+  recipe: "Parse content-security-policy: reject unsafe-inline in script-src …"
+}
+```
+
+`verify` says who can settle the check:
+
+| value | meaning | count |
+| --- | --- | --- |
+| `agent` | Decidable from the site alone. `recipe` says how. | 28 |
+| `shared` | An agent gathers the evidence, a person makes the call. | 20 |
+| `human` | Judgement, or knowledge that isn't on the site. | 23 |
+
+**Agent-checkable only** filters to the 48 non-human checks and reveals each recipe. That
+split is what a future WebMCP integration would drive: the page holds the list, the order and
+the record; the agent does the fetching and reports evidence back.
+
+Ids are permanent. They key the saved results, and renaming one orphans anyone's existing
+tick — results are stored in `localStorage` under `preflight-results-v2` as
+`{ "security.csp": { "status": "done", "by": "you" } }`. The `by` field exists so an
+agent-recorded result can be told apart from one you made yourself.
+
+Ticks saved by the earlier positional scheme (`chk-0`, `chk-1`, …) are migrated to ids once,
+on first load, using `LEGACY_ORDER` at the bottom of `checks.js`.
 
 After changing anything the service worker precaches, bump `CACHE` in `sw.js`.
+
+## Known trade-off
+
+The checklist is rendered by JavaScript, so with scripting disabled the page shows only a
+short explanation. That is the cost of having one source of truth that both a person and an
+agent can read; `checks.js` is plain readable data if you want the list without the app. A
+prerender step would fix it, at the cost of the no-build-step property.
