@@ -15,6 +15,7 @@ Live at **https://onion2k.github.io/preflight/**
 | `checks.js` | The checklist as data — 12 sections, 73 items, each with a permanent id. |
 | `app.js` | Renders the checklist from that data and stores results. |
 | `webmcp.js` | Exposes the checklist to an AI agent as WebMCP tools. |
+| `state.js` | Saving, loading and sharing a run between browsers. |
 | `pwa.js` | Install prompt, update prompt, online/offline status. |
 | `version.json` | The published build, fetched past the cache to detect a stale one. |
 | `tools/stamp.py` | Bumps the build across `sw.js`, `app.js` and `version.json` together. |
@@ -122,6 +123,9 @@ list, the order and the record; the agent does the fetching and reports what it 
 | `list-checks` | Lists checks with ids, recipes and status; filter by section, verify class or status. |
 | `next-check` | The next outstanding check an agent can work on, with its recipe. |
 | `record-result` | Records `pass` / `fail` / `na` for one check, with evidence. |
+| `share-results` | A link that opens the checklist elsewhere with this run already loaded. |
+| `export-results` | The run as JSON, for when it is too big for a link. |
+| `import-results` | Loads an earlier run, to carry on rather than start again. |
 | `summary` | What passed, what failed, outstanding blockers, what still needs a person. |
 
 Three rules are enforced in the tool layer rather than left to the agent's good manners:
@@ -140,6 +144,29 @@ agent checking it.
 Results an agent records are stored with `by: "agent"` and shown on the item with the
 evidence. Ticking such a check by hand makes it yours (`by: "you"`) but keeps the evidence
 visible, so an agent's finding is never silently erased by a click.
+
+### Carrying a run between browsers
+
+Results live in `localStorage`, which is scoped to one browser profile and one origin. A
+person ticking boxes in Chrome and an agent running in ChatGPT Desktop are therefore two
+separate lists, and neither can see the other.
+
+**Save, load or share this run** in the page bridges them:
+
+- **Copy share link** puts the whole run in the URL fragment — gzipped through
+  `CompressionStream`, base64url encoded, `#results=…`. Opening it anywhere loads the run,
+  strips the fragment so a reload does not reapply it, and says what it merged. It applies on
+  `hashchange` too, so pasting a link into an already-open checklist works.
+- **Save file** / **Load file** for a run too large for a link, or for keeping alongside a
+  project.
+- **Copy JSON** / paste box for moving a run by hand.
+
+Agents do the same through `share-results`, `export-results` and `import-results`.
+
+Merging has one rule worth knowing: **your own ticks win.** A record you settled yourself is
+never overwritten by an incoming one for the same check, whoever recorded it. Between two
+agent records the later `at` timestamp wins, and results for ids this build does not know are
+ignored rather than stored.
 
 ### Trying it
 

@@ -157,6 +157,62 @@
     },
 
     {
+      name: "share-results",
+      description: "Produces a link that opens this checklist in any browser with everything recorded so far already in place. Give it to the user when you finish a run: their own browser keeps its own results, so this is how your findings reach them.",
+      inputSchema: { type: "object", properties: {} },
+      execute: async function () {
+        const S = window.PreflightState;
+        if (!S) return "Sharing is unavailable: state.js did not load.";
+        const link = await S.toLink();
+        if (!link) {
+          return "There is too much evidence to fit in a link. Call export-results instead and " +
+            "give the user the JSON to load with the Save, load or share this run panel.";
+        }
+        return "Give the user this link — opening it loads everything recorded here, and their " +
+          "own ticks win over anything recorded by an agent:\n" + link;
+      }
+    },
+
+    {
+      name: "export-results",
+      description: "Returns this run as a JSON blob the user can save or load elsewhere. Use it when share-results says the run is too large for a link, or when the user wants the results as a file.",
+      inputSchema: { type: "object", properties: {} },
+      execute: function () {
+        const S = window.PreflightState;
+        if (!S) return "Export is unavailable: state.js did not load.";
+        return S.snapshot();
+      }
+    },
+
+    {
+      name: "import-results",
+      description: "Loads a previously exported run into this checklist, so you can carry on where an earlier session stopped rather than re-checking everything.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          results: { type: "string", description: "The JSON from export-results, or a share link." }
+        },
+        required: ["results"]
+      },
+      execute: async function (args) {
+        const S = window.PreflightState;
+        if (!S) return "Import is unavailable: state.js did not load.";
+        const text = (args.results || "").trim();
+        try {
+          const marker = text.indexOf("#results=");
+          const blob = marker === -1
+            ? JSON.parse(text)
+            : JSON.parse(await S.decode(text.slice(marker + 9)));
+          const report = S.merge(blob);
+          return "Loaded " + report.added + " results, updated " + report.updated + ", kept " +
+            report.kept + " already settled here.";
+        } catch (error) {
+          return "Could not read those results: " + error.message;
+        }
+      }
+    },
+
+    {
       name: "summary",
       description: "Reports where the checklist stands: what passed, what failed, which blockers are outstanding, and what still needs a person.",
       inputSchema: { type: "object", properties: {} },

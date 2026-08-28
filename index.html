@@ -194,6 +194,66 @@
   }
   .status.offline { color: var(--hold); }
 
+  .panel {
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: 0;
+    align-self: stretch;
+  }
+  .panel > summary {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    padding: 11px 16px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .panel > summary::-webkit-details-marker { display: none; }
+  .panel > summary::before { content: "+ "; color: var(--ink-3); }
+  .panel[open] > summary::before { content: "– "; }
+  .panel > summary:hover { color: var(--ink); }
+  .panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 16px 18px;
+    border-top: 1px solid var(--rule-2);
+  }
+  .panel-lede { margin: 12px 0 0; font-size: .93rem; color: var(--ink-2); max-width: 68ch; }
+  .panel-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .panel-field { display: flex; flex-direction: column; gap: 6px; }
+  .panel-field span {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .panel-field textarea {
+    font-family: var(--mono);
+    font-size: .8rem;
+    color: var(--ink);
+    background: var(--panel-2);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 10px;
+    resize: vertical;
+    width: 100%;
+  }
+  .filepick { position: relative; overflow: hidden; }
+  .filepick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .panel-note {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--go);
+    min-height: 1em;
+  }
+  .panel-note.bad { color: var(--stop); }
+
   /* ---------- layout ---------- */
   .cols {
     display: grid;
@@ -549,7 +609,7 @@
 
   @media print {
     .scrolltrack { display: none; }
-    nav.rail, .btn, .meterbar, .status { display: none; }
+    nav.rail, .btn, .meterbar, .status, .panel { display: none; }
     section.block { box-shadow: none; break-inside: avoid; }
   }
 </style>
@@ -564,6 +624,29 @@
     <h1>Preflight for Launch</h1>
     <p class="standfirst">Everything worth checking before a site is public, grouped by the person who usually owns it. Items marked <span class="tag block">blocker</span> are the ones that hurt after launch, not before &mdash; wrong content in a search index, a missing security header, a 404 that returns&nbsp;200. Your ticks are saved in this browser.</p>
     <p class="target" id="target" hidden></p>
+    <details class="panel" id="results-panel">
+      <summary>Save, load or share this run</summary>
+      <div class="panel-body">
+        <p class="panel-lede">A person and an agent often work in different browsers, and each
+        browser keeps its own results. Carry a run between them as a file, as JSON, or as a link
+        that opens the checklist with the findings already in place. Your own ticks always win
+        over an incoming record for the same check.</p>
+        <div class="panel-actions">
+          <button class="btn" type="button" data-action="copy">Copy JSON</button>
+          <button class="btn" type="button" data-action="download">Save file</button>
+          <button class="btn" type="button" data-action="link">Copy share link</button>
+        </div>
+        <label class="panel-field">
+          <span>Paste results JSON or a share link</span>
+          <textarea rows="3" spellcheck="false"></textarea>
+        </label>
+        <div class="panel-actions">
+          <button class="btn primary" type="button" data-action="load">Load pasted results</button>
+          <label class="btn filepick">Load file<input type="file" accept="application/json,.json"></label>
+        </div>
+        <p class="panel-note" role="status"></p>
+      </div>
+    </details>
     <div class="meterbar">
       <div class="meter" role="progressbar" aria-label="Checklist progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><span id="meterfill"></span></div>
       <div class="tally" id="tally">0 / 0 checked</div>
@@ -600,13 +683,14 @@
   </div>
 
   <footer class="foot">
-    <span id="build">build v10</span>
+    <span id="build">build v12</span>
     <span>Progress saved in this browser only</span>
   </footer>
 </div>
 
 <script src="./checks.js" defer></script>
 <script src="./app.js" defer></script>
+<script src="./state.js" defer></script>
 <script src="./webmcp.js" defer></script>
 <script src="./pwa.js" defer></script>
 
