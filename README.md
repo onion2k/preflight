@@ -5,13 +5,17 @@ Twelve sections — content, accessibility (WCAG 2.2 AA), security headers, craw
 Lighthouse, error pages, metadata, legal, DNS, monitoring, QA, launch day. Ticks are stored
 in `localStorage`, so progress survives a reload and an install.
 
-Live at **https://onion2k.github.io/preflight/**
+Live at **https://onion2k.github.io/preflight/** — with a plain-English guide at
+**[/guide.html](https://onion2k.github.io/preflight/guide.html)** for people launching a site
+they built with AI, who should not have to read this file to use the thing.
 
 ## Files
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | The shell: head, styles, and the elements the app renders into. No build step. |
+| `index.html` | The checklist shell: head and the elements the app renders into. No build step. |
+| `guide.html` | Plain-English guide for people launching a site they built with AI. |
+| `styles.css` | Shared stylesheet for both pages. |
 | `checks.js` | The checklist as data — 12 sections, 73 items, each with a permanent id. |
 | `app.js` | Renders the checklist from that data and stores results. |
 | `webmcp.js` | Exposes the checklist to an AI agent as WebMCP tools. |

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to Use Preflight</title>
+<meta name="description" content="A plain-English guide to launching a website you built with AI: what to check, what an AI assistant can check for you, and what only you can.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f7f8f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1210" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">Guide &middot; no technical background needed</div>
+    <h1>How to Use Preflight</h1>
+    <p class="standfirst">You have built a website — probably with a lot of help from an AI — and
+    it works. Launching it is a different job from building it, and it is the part nobody shows
+    you. This is what to check before you put it in front of people, in the order that matters.</p>
+    <a class="backlink" href="./">Open the checklist</a>
+  </header>
+
+  <div class="guide">
+
+    <section id="what">
+      <h2>What the checklist actually is</h2>
+      <p class="lede">73 things worth checking before a website goes live, grouped by the kind of
+      problem they prevent.</p>
+      <p>None of it is about whether your site is good. It is about the specific, boring failures
+      that are invisible from the inside and expensive from the outside: a page that tells Google
+      not to list you, a contact form that quietly sends nothing, a broken link in the one place
+      people click, a copyright year stuck in the past.</p>
+      <p>You will not need all 73. Plenty will not apply to you, and the checklist says so where
+      that is likely. The point is to decide about each one rather than discover it later.</p>
+    </section>
+
+    <section id="start">
+      <h2>Start here if you have twenty minutes</h2>
+      <p>Eight items are marked <b>blocker</b>. They are the ones that are hard to undo, or that
+      do damage quietly while you think everything is fine. In rough order of how often they go
+      wrong on a site built quickly:</p>
+      <ol>
+        <li><b>Placeholder text.</b> Search your live site for words like <i>lorem</i>,
+        <i>TODO</i>, <i>example.com</i> and <i>Coming soon</i>. AI-built sites are full of them,
+        and they are invisible until someone else reads the page.</li>
+        <li><b>The robots file.</b> One line in a file called <code>robots.txt</code> can tell
+        every search engine to ignore your entire site. It is the single most common launch
+        mistake, and you cannot see it by looking at your pages.</li>
+        <li><b>The 404 page.</b> Type nonsense after your domain name. You should get a proper
+        "not found" page with a way back — not a blank screen, and not your homepage pretending
+        nothing is wrong.</li>
+        <li><b>Secrets in the code.</b> If you pasted an API key, password or token anywhere
+        during building, assume it is public. Check, and change it if it was.</li>
+        <li><b>The privacy page.</b> If your site collects anything at all — a form, analytics, an
+        embedded video — it needs a page saying so, honestly.</li>
+        <li><b>Who owns the domain.</b> It should be registered to you, with auto-renew on and a
+        working email address on the account. Domains lapse silently.</li>
+        <li><b>Security headers.</b> A handful of settings that tell browsers how to protect
+        people on your site. An AI can check and fix these for you.</li>
+        <li><b>Accessibility.</b> Run the automated scan. It will not catch everything, but the
+        problems it does catch are usually quick to fix and genuinely shut people out.</li>
+      </ol>
+      <p>Turn on <b>Agent-checkable only</b> at the top of the checklist and most of this becomes
+      something you can hand to an AI. More on that below.</p>
+    </section>
+
+    <section id="using">
+      <h2>Using the page</h2>
+      <p>Tick things off as you go. Your ticks are saved in your browser, so you can close the tab
+      and come back — but they live in <i>that</i> browser, on <i>that</i> device, and nowhere
+      else. Nothing is sent anywhere.</p>
+      <p>You can install it like an app: Chrome and Edge offer an <b>Install app</b> button in the
+      page, and on an iPhone it is Share → Add to Home Screen. Installed, it works offline.</p>
+      <h3>The labels on each check</h3>
+      <dl>
+        <dt>blocker</dt>
+        <dd>Do not launch without deciding about this one.</dd>
+        <dt>agent-checkable</dt>
+        <dd>An AI assistant can settle this by itself, by looking at your live site.</dd>
+        <dt>agent + you</dt>
+        <dd>An AI can gather the facts, but the judgement is yours.</dd>
+        <dt>if applicable / if required</dt>
+        <dd>Only relevant to some sites. Read it, decide, tick it if it does not apply to you.</dd>
+      </dl>
+    </section>
+
+    <section id="agent">
+      <h2>Getting an AI to do the mechanical half</h2>
+      <p>51 of the 73 checks are things an AI can verify by fetching your site and reading what
+      comes back. The checklist carries the exact instructions for each one, so you do not have to
+      know what a security header is to get one checked.</p>
+      <h3>The way that works best</h3>
+      <p>Open the checklist in a browser whose AI assistant can act on the page you are looking at
+      — Chrome or Edge with their built-in assistant, or Brave's Leo. Then ask it something like:</p>
+      <p class="said">Use the tools on this page to check https://yoursite.com. Work through the
+      agent-checkable items, record each result with the evidence, and tell me what failed.</p>
+      <p>It will work down the list, and its findings appear against the items with the actual
+      evidence — the header it read, the status code it got, the number it measured. A finding
+      that fails does <b>not</b> tick the box: a check that ran and did not pass is worse than one
+      nobody has looked at, so it stays open and shows a red mark.</p>
+      <h3>If your AI is somewhere else</h3>
+      <p>An assistant in a different app — ChatGPT Desktop, or a chat window in another browser —
+      keeps its own copy of the results, because browsers keep each site's data separate. Ask it
+      for a share link when it finishes, open that link in your own browser, and its findings
+      merge into your list. Anything you had already ticked yourself stays as you left it.</p>
+      <h3>What to be sceptical about</h3>
+      <p>An AI saying "passed" is a claim, not proof. That is why every result it records has to
+      carry evidence. If a result has no evidence behind it, treat it as unchecked, and spot-check
+      a couple of the ones that matter most to you.</p>
+    </section>
+
+    <section id="failures">
+      <h2>Something failed. Now what?</h2>
+      <p>Most findings are fixed in the same place you built the site. The evidence line is the
+      useful part — it is the specific, quotable fact that turns a vague worry into a task.</p>
+      <p>Copy the check and its evidence into whatever built your site, and ask plainly:</p>
+      <p class="said">My site fails this check: "Content-Security-Policy in enforcing mode". What
+      was found: the live header is only frame-ancestors 'none', the rest of the policy is in a
+      meta tag. Explain what that means in plain English, tell me whether it matters for my site,
+      and if it does, make the change.</p>
+      <p>Asking it to explain first, and only then to fix, is deliberate. It gives you a chance to
+      notice when the answer does not apply to your situation — and some findings genuinely do not
+      matter for a small personal site. Deciding to skip something is a fine outcome. Not knowing
+      it was there is not.</p>
+      <p>When it is fixed, ask the AI to re-run that one check rather than trusting that the change
+      worked.</p>
+    </section>
+
+    <section id="human">
+      <h2>The part no AI can do for you</h2>
+      <p>22 checks need a person, and they are not the leftovers — several are the ones most likely
+      to embarrass you:</p>
+      <ul>
+        <li><b>Read your own site.</b> Every page, out loud if you can bear it. Spellcheck cannot
+        catch a real word in the wrong place, and AI-written copy is fluent enough to hide it.</li>
+        <li><b>Send a message through every form,</b> and confirm it arrives somewhere a human
+        reads. Test the reply address too.</li>
+        <li><b>Use it on your phone,</b> on mobile data, the way a stranger would.</li>
+        <li><b>Try it with the keyboard only</b> — no mouse, just Tab and Enter. If you cannot
+        reach something, neither can a lot of people.</li>
+        <li><b>Watch someone else use it</b> for five minutes without helping them. This finds more
+        than the rest of the list put together.</li>
+        <li><b>Check you can restore a backup,</b> before you need to.</li>
+      </ul>
+    </section>
+
+    <section id="words">
+      <h2>Words you will meet</h2>
+      <dl>
+        <dt>robots.txt</dt>
+        <dd>A file that tells search engines what they may look at. A leftover setting here can
+        hide your whole site from Google.</dd>
+        <dt>Sitemap</dt>
+        <dd>A list of your pages, for search engines. It should list the real addresses of pages
+        that exist — not old ones that redirect.</dd>
+        <dt>Canonical URL</dt>
+        <dd>The one official address for a page, when several could reach it. Stops search engines
+        treating copies as separate pages.</dd>
+        <dt>Redirect (301)</dt>
+        <dd>An instruction that a page has permanently moved. Needed when addresses change, so old
+        links keep working.</dd>
+        <dt>404 / 500</dt>
+        <dd>"That page does not exist" and "something broke at our end". Both need a real page and
+        the right signal to browsers and search engines.</dd>
+        <dt>HTTPS / TLS certificate</dt>
+        <dd>The padlock. It encrypts the connection, expires periodically, and should renew itself.</dd>
+        <dt>Security headers (CSP, HSTS)</dt>
+        <dd>Instructions your server sends with every page, limiting what can run on it and
+        insisting on an encrypted connection. Invisible, and worth getting right.</dd>
+        <dt>Lighthouse</dt>
+        <dd>A free tool built into Chrome that scores speed, accessibility and basic good practice.
+        Right-click a page → Inspect → Lighthouse.</dd>
+        <dt>Core Web Vitals</dt>
+        <dd>Three measurements of how fast a page feels: how quickly the main thing appears, how
+        quickly it responds, and how much it jumps around while loading.</dd>
+        <dt>WCAG 2.2 AA</dt>
+        <dd>The accessibility standard most laws point at. "AA" is the level nearly everyone means.</dd>
+        <dt>DNS</dt>
+        <dd>The address book that connects your domain name to where your site actually lives.
+        Changes here take time to spread, so do them before launch day.</dd>
+        <dt>SPF / DKIM / DMARC</dt>
+        <dd>Three DNS settings that prove email from your domain is really yours. Without them your
+        form notifications land in spam.</dd>
+        <dt>alt text</dt>
+        <dd>A short description of an image, read aloud to people who cannot see it.</dd>
+        <dt>noindex</dt>
+        <dd>A tag telling search engines to skip a page. Useful deliberately, ruinous accidentally.</dd>
+      </dl>
+    </section>
+
+    <section id="three">
+      <h2>If you only do three things</h2>
+      <ol>
+        <li>Search your live site for placeholder text.</li>
+        <li>Visit <code>yoursite.com/robots.txt</code> and make sure it does not say
+        <code>Disallow: /</code>.</li>
+        <li>Send a message through your own contact form and check it arrives.</li>
+      </ol>
+      <p>Then come back and do the rest properly.</p>
+      <a class="backlink" href="./">Open the checklist</a>
+    </section>
+
+  </div>
+
+  <footer class="foot">
+    <span>Preflight &middot; guide</span>
+    <span>Nothing on this page is sent anywhere</span>
+  </footer>
+</div>
+
+</body>
+</html>

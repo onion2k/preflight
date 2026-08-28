@@ -1,13 +1,15 @@
 // Preflight for Launch — service worker.
 // Bump CACHE when the shell changes; the old cache is dropped on activate.
-const CACHE = "preflight-shell-v12";
-const RUNTIME = "preflight-runtime-v12";
+const CACHE = "preflight-shell-v13";
+const RUNTIME = "preflight-runtime-v13";
 
 // version.json is deliberately absent: it is fetched from the network to detect this cache
 // being stale, so caching it would defeat the point.
 const SHELL = [
   "./",
   "./index.html",
+  "./guide.html",
+  "./styles.css",
   "./checks.js",
   "./app.js",
   "./state.js",
@@ -66,7 +68,8 @@ self.addEventListener("fetch", (event) => {
           caches.open(CACHE).then((cache) => cache.put("./index.html", copy));
           return response;
         })
-        .catch(() => caches.match("./index.html", { ignoreSearch: true })
+        .catch(() => caches.match(request, { ignoreSearch: true })
+          .then((cached) => cached || caches.match("./index.html", { ignoreSearch: true }))
           .then((cached) => cached || caches.match("./")))
     );
     return;
