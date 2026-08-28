@@ -6,7 +6,7 @@
   "use strict";
 
   // Bumped by tools/stamp.py together with the service worker cache name and version.json.
-  const BUILD = "v19";
+  const BUILD = "v20";
   const CHECKS = window.PREFLIGHT_CHECKS || [];
   const LEGACY_ORDER = window.PREFLIGHT_LEGACY_ORDER || [];
   const STORE = "preflight-results-v2";
@@ -221,11 +221,49 @@
     }
   }
 
+  const targetInput = document.getElementById("target-input");
+  const targetClear = document.getElementById("target-clear");
+
+  // Set while someone is part-way through typing, so their keystrokes are not overwritten by a
+  // re-render. Focus alone is not enough of a guard: an agent calling set-target, a share link,
+  // or Reset all must still land in the field while the cursor happens to be sitting in it.
+  let typingTarget = false;
+
   function renderTarget() {
-    const node = document.getElementById("target");
-    if (!node) return;
-    node.hidden = !target;
-    if (target) node.innerHTML = "Checking <b>" + target.replace(/[<>&]/g, "") + "</b>";
+    if (!targetInput) return;
+    if (!typingTarget) targetInput.value = target || "";
+    if (targetClear) targetClear.hidden = !target;
+  }
+
+  // Typed by hand, or set by an agent calling set-target — either way it ends up here.
+  function readTargetField() {
+    const value = targetInput.value.trim();
+    if (!value) return null;
+    return /^https?:\/\//.test(value) ? value : "https://" + value;
+  }
+
+  if (targetInput) {
+    targetInput.addEventListener("input", function () { typingTarget = true; });
+    targetInput.addEventListener("change", function () {
+      typingTarget = false;
+      const value = readTargetField();
+      targetInput.value = value || "";
+      P_setTarget(value);
+    });
+    targetInput.addEventListener("blur", function () {
+      typingTarget = false;
+      const value = readTargetField();
+      if (value !== target) { targetInput.value = value || ""; P_setTarget(value); }
+    });
+  }
+
+  if (targetClear) {
+    targetClear.addEventListener("click", function () {
+      typingTarget = false;
+      targetInput.value = "";
+      P_setTarget(null);
+      targetInput.focus();
+    });
   }
 
   function update() {
@@ -310,7 +348,7 @@
     results = {};
     writeResults(results);
     inputs.forEach(function (input) { input.checked = false; });
-    changed();
+    P_setTarget(null);
   });
 
   // ---------- the interface the WebMCP tools drive ----------
@@ -321,6 +359,14 @@
       if (found) return { check: found, section: CHECKS[i] };
     }
     return null;
+  }
+
+  function P_setTarget(url) {
+    target = url;
+    try {
+      if (url) localStorage.setItem(TARGET_STORE, url); else localStorage.removeItem(TARGET_STORE);
+    } catch (e) {}
+    changed();
   }
 
   window.Preflight = {
@@ -344,13 +390,7 @@
       changed();
     },
     getTarget: function () { return target; },
-    setTarget: function (url) {
-      target = url;
-      try {
-        if (url) localStorage.setItem(TARGET_STORE, url); else localStorage.removeItem(TARGET_STORE);
-      } catch (e) {}
-      changed();
-    },
+    setTarget: P_setTarget,
     onChange: function (fn) { listeners.push(fn); }
   };
 

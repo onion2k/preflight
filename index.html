@@ -35,7 +35,12 @@
     <div class="eyebrow">Pre-launch checks &middot; run top to bottom &middot; <a class="headlink" href="./guide.html">how to use this</a></div>
     <h1>Preflight for Launch</h1>
     <p class="standfirst">Everything worth checking before a site is public, grouped by the person who usually owns it. Items marked <span class="tag block">blocker</span> are the ones that hurt after launch, not before &mdash; wrong content in a search index, a missing security header, a 404 that returns&nbsp;200. Your ticks are saved in this browser.</p>
-    <p class="target" id="target" hidden></p>
+    <label class="target">
+      <span>Checking</span>
+      <input id="target-input" type="url" inputmode="url" spellcheck="false"
+             placeholder="the site you are checking — yoursite.com">
+      <button type="button" id="target-clear" hidden aria-label="Clear the site being checked">clear</button>
+    </label>
     <details class="panel" id="results-panel">
       <summary>Save, load or share this run</summary>
       <div class="panel-body">
@@ -95,7 +100,7 @@
   </div>
 
   <footer class="foot">
-    <span id="build">build v19</span>
+    <span id="build">build v20</span>
     <span>Progress saved in this browser only</span>
   </footer>
 </div>

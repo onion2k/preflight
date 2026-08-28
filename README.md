@@ -162,6 +162,9 @@ Results live in `localStorage`, which is scoped to one browser profile and one o
 person ticking boxes in Chrome and an agent running in ChatGPT Desktop are therefore two
 separate lists, and neither can see the other.
 
+The site being checked is a field in the header, not a label: type it yourself before you start,
+or let an agent's `set-target` fill it in. Clearing it, or **Reset all**, empties it.
+
 **Save, load or share this run** in the page bridges them:
 
 - **Copy share link** puts the whole run in the URL fragment — gzipped through
