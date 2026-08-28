@@ -12,14 +12,14 @@ Live at **https://onion2k.github.io/preflight/**
 | Path | What it is |
 | --- | --- |
 | `index.html` | The shell: head, styles, and the elements the app renders into. No build step. |
-| `checks.js` | The checklist as data — 12 sections, 71 items, each with a permanent id. |
+| `checks.js` | The checklist as data — 12 sections, 73 items, each with a permanent id. |
 | `app.js` | Renders the checklist from that data and stores results. |
 | `webmcp.js` | Exposes the checklist to an AI agent as WebMCP tools. |
 | `pwa.js` | Install prompt, update prompt, online/offline status. |
 | `version.json` | The published build, fetched past the cache to detect a stale one. |
 | `tools/stamp.py` | Bumps the build across `sw.js`, `app.js` and `version.json` together. |
 | `manifest.webmanifest` | Name, icons, `standalone` display, theme colours, section shortcuts. |
-| `sw.js` | Service worker. Network-first for the page, its scripts and its data; cache-first for icons; stale-while-revalidate for webfonts. |
+| `sw.js` | Service worker. Network-first (revalidating) for the page, its scripts and its data; cache-first for icons; stale-while-revalidate for webfonts. |
 | `icons/` | Generated PNG set plus the source `icon.svg`. |
 | `tools/make-icons.py` | Regenerates the PNGs from the vector description. No dependencies. |
 
@@ -45,10 +45,11 @@ GitHub Pages serves `main` from the repository root, so a push to `main` deploys
 in the app is relative, which is what lets it work from the `/preflight/` subpath as well as
 from a domain root.
 
-Pages serves everything with `Cache-Control: max-age=600` and does not let you change it, so
-a new version can take up to ten minutes to reach someone who already has the app open. That
-is inside the 24-hour limit above which browsers bypass the HTTP cache for service worker
-update checks, so updates do arrive — just not instantly.
+Pages serves everything with `Cache-Control: max-age=600` and does not let you change it. The
+service worker fetches code and data with `cache: "no-cache"`, so those revalidate rather than
+sitting in the browser cache for ten minutes; `sw.js` itself is fetched by the browser and can
+still lag by that much before a new worker is noticed. Ten minutes is well inside the 24-hour
+limit above which browsers bypass the HTTP cache for worker updates entirely.
 
 On any other static host, two things to get right:
 
@@ -80,16 +81,16 @@ scroll markers and the filter all build themselves from the data at load.
 
 | value | meaning | count |
 | --- | --- | --- |
-| `agent` | Decidable from the site alone. `recipe` says how. | 28 |
-| `shared` | An agent gathers the evidence, a person makes the call. | 20 |
-| `human` | Judgement, or knowledge that isn't on the site. | 23 |
+| `agent` | Decidable from the site alone. `recipe` says how. | 30 |
+| `shared` | An agent gathers the evidence, a person makes the call. | 21 |
+| `human` | Judgement, or knowledge that isn't on the site. | 22 |
 
-**Agent-checkable only** filters to the 48 non-human checks and reveals each recipe. That
+**Agent-checkable only** filters to the 51 non-human checks and reveals each recipe. That
 split is what a future WebMCP integration would drive: the page holds the list, the order and
 the record; the agent does the fetching and reports evidence back.
 
 Ids are permanent. They key the saved results, and renaming one orphans anyone's existing
-tick — results are stored in `localStorage` under `preflight-results-v2` as
+tick — but adding or reordering items is free, which is the point of the refactor — results are stored in `localStorage` under `preflight-results-v2` as
 `{ "security.csp": { "status": "done", "by": "you" } }`. The `by` field exists so an
 agent-recorded result can be told apart from one you made yourself.
 

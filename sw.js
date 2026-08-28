@@ -1,7 +1,7 @@
 // Preflight for Launch — service worker.
 // Bump CACHE when the shell changes; the old cache is dropped on activate.
-const CACHE = "preflight-shell-v8";
-const RUNTIME = "preflight-runtime-v8";
+const CACHE = "preflight-shell-v10";
+const RUNTIME = "preflight-runtime-v10";
 
 // version.json is deliberately absent: it is fetched from the network to detect this cache
 // being stale, so caching it would defeat the point.
@@ -97,8 +97,12 @@ self.addEventListener("fetch", (event) => {
   // old cache — a fresh page running stale scripts, for as long as the previous worker
   // stayed active. Correctness is worth more than the milliseconds cache-first saved.
   if (/\.(js|json|css|webmanifest)$/.test(url.pathname)) {
+    // "no-cache" revalidates rather than trusting the HTTP cache. Without it, network-first
+    // still hands back a stale script: GitHub Pages sends max-age=600 on everything and will
+    // not let you change it, so the worker's own fetch can be answered from the browser cache.
+    // A conditional request costs a 304.
     event.respondWith(
-      fetch(request)
+      fetch(new Request(request, { cache: "no-cache" }))
         .then((response) => {
           const copy = response.clone();
           caches.open(CACHE).then((cache) => cache.put(request, copy));

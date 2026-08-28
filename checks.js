@@ -143,7 +143,8 @@ const PREFLIGHT_CHECKS = [
         task: "Accessibility statement published",
         note: "Named standard, known gaps, contact route for problems, and the date last reviewed. Legally required for public sector bodies in the UK and EU.",
         tag: { kind: "ifapp", label: "if required" },
-        verify: "human"
+        verify: "shared",
+        recipe: "Find the statement and check it names a standard and version, lists known gaps, gives a contact route for reporting problems, and carries a review date. Report which of those are missing, and whether it is reachable from a stable URL rather than only the footer."
       },
     ]
   },
@@ -159,7 +160,7 @@ const PREFLIGHT_CHECKS = [
         note: "No <code>unsafe-inline</code> for scripts &mdash; use nonces or hashes. Include <code>object-src 'none'</code>, <code>base-uri 'self'</code>, <code>frame-ancestors</code>, and a <code>report-uri</code>/<code>report-to</code> endpoint you actually watch. Ship in report-only first, then flip.",
         tag: { kind: "block", label: "blocker" },
         verify: "agent",
-        recipe: "Parse content-security-policy: reject unsafe-inline in script-src, require object-src 'none', base-uri and frame-ancestors."
+        recipe: "Read the policy from the response header, and separately from any <meta http-equiv> tag. A meta-delivered policy only applies from the parse point on, and frame-ancestors, sandbox and report-uri are ignored there entirely — report the split if the two disagree. Then reject unsafe-inline in script-src, and require object-src 'none', base-uri, frame-ancestors and a reporting endpoint."
       },
       {
         id: "security.hsts",
@@ -249,11 +250,26 @@ const PREFLIGHT_CHECKS = [
         recipe: "Request /robots.txt, /sitemap.xml, /llms.txt, /.well-known/security.txt and /favicon.ico; check status, content type, and that robots.txt does not disallow everything."
       },
       {
+        id: "files.sitemap-urls",
+        task: "Every URL in the sitemap is canonical and returns 200",
+        note: "A sitemap of redirects is the usual shape of this: the site canonicalises to a trailing slash and the sitemap omits it, or lists http:// and the site is https://. Search engines follow them, but it wastes crawl budget and hides the URLs you meant to publish.",
+        verify: "agent",
+        recipe: "Request every URL in sitemap.xml and report any that redirect, 404, or disagree with the page's own rel=canonical. Check llms.txt and any feed the same way."
+      },
+      {
         id: "files.no-accidental-noindex",
         task: "No page is accidentally <code>noindex</code>",
         note: "Check both the meta tag and the <code>X-Robots-Tag</code> header on the live response.",
         verify: "agent",
         recipe: "Check the robots meta tag and the x-robots-tag header on every page in the sitemap."
+      },
+      {
+        id: "files.feed",
+        task: "A feed is published and linked from the head",
+        tag: { kind: "ifapp", label: "if you publish serially" },
+        note: "RSS or Atom for anything with posts, releases or changes. A feed nobody can discover is the same as no feed, so it needs a <code>&lt;link rel=\"alternate\"&gt;</code> in <code>&lt;head&gt;</code> as well as a URL.",
+        verify: "agent",
+        recipe: "Request /feed.xml, /rss.xml, /atom.xml and /index.xml; check <head> for link rel=alternate. If one exists, validate it and confirm the entries match what the site publishes."
       },
     ]
   },
