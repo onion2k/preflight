@@ -1,7 +1,7 @@
 // Preflight for Launch — service worker.
 // Bump CACHE when the shell changes; the old cache is dropped on activate.
-const CACHE = "preflight-shell-v6";
-const RUNTIME = "preflight-runtime-v6";
+const CACHE = "preflight-shell-v8";
+const RUNTIME = "preflight-runtime-v8";
 
 // version.json is deliberately absent: it is fetched from the network to detect this cache
 // being stale, so caching it would defeat the point.
@@ -90,7 +90,26 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Same-origin static assets: cache first.
+  // Same-origin code and data: network first, cache as the offline floor.
+  //
+  // Cache-first here was a bug worth naming. Navigations are network-first, so a deploy
+  // updated index.html immediately while app.js and webmcp.js kept being served from the
+  // old cache — a fresh page running stale scripts, for as long as the previous worker
+  // stayed active. Correctness is worth more than the milliseconds cache-first saved.
+  if (/\.(js|json|css|webmanifest)$/.test(url.pathname)) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE).then((cache) => cache.put(request, copy));
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Icons and other assets that only change with a new name: cache first.
   event.respondWith(
     caches.match(request).then((cached) => cached || fetch(request).then((response) => {
       const copy = response.clone();

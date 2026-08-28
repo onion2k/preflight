@@ -19,7 +19,7 @@ Live at **https://onion2k.github.io/preflight/**
 | `version.json` | The published build, fetched past the cache to detect a stale one. |
 | `tools/stamp.py` | Bumps the build across `sw.js`, `app.js` and `version.json` together. |
 | `manifest.webmanifest` | Name, icons, `standalone` display, theme colours, section shortcuts. |
-| `sw.js` | Service worker. Network-first for navigations, cache-first for local assets, stale-while-revalidate for webfonts. |
+| `sw.js` | Service worker. Network-first for the page, its scripts and its data; cache-first for icons; stale-while-revalidate for webfonts. |
 | `icons/` | Generated PNG set plus the source `icon.svg`. |
 | `tools/make-icons.py` | Regenerates the PNGs from the vector description. No dependencies. |
 
@@ -102,8 +102,8 @@ After changing anything the service worker precaches, stamp a new build:
 python3 tools/stamp.py
 ```
 
-That moves the cache name in `sw.js`, the `BUILD` constant in `app.js` and `version.json`
-together — they have to agree, and bumping them by hand is how you end up debugging a script
+That moves the cache name in `sw.js`, the `BUILD` constant in `app.js`, the stamp in the
+`index.html` footer and `version.json` together — they have to agree, and bumping them by hand is how you end up debugging a script
 the browser cached ten minutes ago. The footer shows the build that is actually executing, and
 turns amber with *"reload to update"* when the server has a newer one.
 

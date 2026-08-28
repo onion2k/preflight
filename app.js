@@ -6,7 +6,7 @@
   "use strict";
 
   // Bumped by tools/stamp.py together with the service worker cache name and version.json.
-  const BUILD = "v6";
+  const BUILD = "v8";
   const CHECKS = window.PREFLIGHT_CHECKS || [];
   const LEGACY_ORDER = window.PREFLIGHT_LEGACY_ORDER || [];
   const STORE = "preflight-results-v2";
@@ -371,7 +371,14 @@
     stamp.classList.toggle("stale", !!stale);
   }
 
-  showBuild("build " + BUILD);
+  // index.html carries the published build (written by tools/stamp.py, and served
+  // network-first), so a stale script announces itself rather than quietly disagreeing.
+  const shellBuild = (stamp && stamp.textContent.replace("build ", "").trim()) || null;
+  if (shellBuild && shellBuild !== BUILD) {
+    showBuild("page " + shellBuild + " running scripts " + BUILD + " — reload to update", true);
+  } else {
+    showBuild("build " + BUILD);
+  }
 
   fetch("./version.json?at=" + Date.now(), { cache: "no-store" })
     .then(function (response) { return response.json(); })
