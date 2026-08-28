@@ -175,7 +175,10 @@ separate lists, and neither can see the other.
 Agents do the same through `share-results`, `export-results` and `import-results`.
 
 Which flow an assistant gets depends on *whose* browser it is working in, which is a different
-question from whether it has one. Chrome, Edge and Leo drive the browser the person is looking
+question from whether it has one — and some assistants cannot do this at all yet. Chrome's and
+Edge's built-in assistants are offered the tools by this site and do not call them, and cannot
+fetch response headers either, so the guide tells the reader that plainly and points them at an
+app that works rather than handing them a prompt that will be refused. Chrome, Edge and Leo drive the browser the person is looking
 at, so a tool call lands in their list. Claude Desktop and ChatGPT Desktop have browsers of
 their own: they read the checklist perfectly well, and anything they record lands in storage
 the person will never see. Those get the prompt that ends in a share link or a JSON block.

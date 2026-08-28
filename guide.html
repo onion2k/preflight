@@ -66,13 +66,26 @@
 
         <li data-flow="tools"><b>Watch the ticks appear.</b> Findings land against each item with
         the evidence behind them.</li>
+
+        <li data-flow="unsupported"><b>Pick a different app above.</b> This one cannot do the job
+        yet — see below.</li>
         <li data-flow="paste"><b>Paste its JSON back</b> into <i>Save, load or share this run</i>
         on the checklist, and the findings land against each item.</li>
       </ol>
 
       <p class="setup-note" id="app-setup"></p>
 
-      <div class="promptwrap">
+      <div class="notice" data-flow="unsupported">
+        <p><b><span data-app-name></span> cannot run this audit yet.</b> It will tell you it has no
+        way to open your site or read response headers, and it does not use the tools this page
+        offers it. Nothing you can configure changes that today.</p>
+        <p>The apps that do work right now: <b>the Claude desktop app</b> and <b>the ChatGPT
+        desktop app</b>, both of which have their own browser, and <b>Brave Leo</b>, which works in
+        the browser you are already using. Choose one above and the prompt below will be written
+        for it.</p>
+      </div>
+
+      <div class="promptwrap" data-flow="supported">
         <div class="prompthead">
           <span>The prompt</span>
           <label class="inline-toggle" hidden>
@@ -177,6 +190,15 @@
         <p>It also asks the assistant to check whether the page offered it tools, and if so to
         finish with a share link instead — same destination, less to copy. That costs nothing if
         it cannot, and saves you a step if it can.</p>
+      </div>
+
+      <div data-flow="unsupported">
+        <p>Assistants built into browsers are the obvious place for this to work, and one day it
+        will be the easiest route of all: the assistant is already looking at the page, and the
+        page is already offering it the tools. Chrome and Edge have switched the browser side on —
+        the part that lets a page offer tools at all — but their assistants do not yet call them.</p>
+        <p>Until they do, use an assistant with its own browser and let it hand the results back.
+        Pick one from the dropdown above.</p>
       </div>
 
       <h3>What good looks like</h3>
@@ -288,7 +310,7 @@
   </div>
 
   <footer class="foot">
-    <span id="build">build v17</span>
+    <span id="build">build v18</span>
     <span>Nothing on this page is sent anywhere</span>
   </footer>
 </div>

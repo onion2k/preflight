@@ -14,16 +14,16 @@
     chrome: {
       name: "Chrome's built-in assistant",
       short: "Chrome",
-      flow: "tools",
+      flow: "unsupported",
       where: "in the same browser as the checklist",
-      setup: "Chrome 149 or newer. The tools are switched on for this site already; if your Chrome does not offer them, turn on <code>chrome://flags/#enable-webmcp-testing</code> and restart."
+      setup: "This site already offers the tools — Chrome's assistant does not yet pick them up, and cannot fetch response headers from your site either. That will change; today it will tell you it cannot help."
     },
     edge: {
       name: "Edge's built-in assistant",
       short: "Edge",
-      flow: "tools",
+      flow: "unsupported",
       where: "in the same browser as the checklist",
-      setup: "Edge 150 or newer."
+      setup: "Same as Chrome: the tools are offered to it, but its assistant does not use them yet."
     },
     brave: {
       name: "Brave Leo",
@@ -148,7 +148,9 @@
     if (setup) setup.innerHTML = chosen.setup;
 
     inlineToggle.closest("label").hidden = chosen.flow !== "paste";
-    promptBox.textContent = chosen.flow === "tools" ? toolsPrompt() : pastePrompt();
+    if (chosen.flow !== "unsupported") {
+      promptBox.textContent = chosen.flow === "tools" ? toolsPrompt() : pastePrompt();
+    }
 
     try { localStorage.setItem(STORE, select.value); } catch (e) {}
   }
@@ -163,6 +165,13 @@
   inlineToggle.addEventListener("change", render);
 
   copyBtn.addEventListener("click", function () {
+    // Copying a prompt that still says yoursite.com wastes a round trip with the assistant.
+    if (!siteInput.value.trim()) {
+      note.textContent = "Add your site's address first — the prompt needs to name it.";
+      note.classList.add("bad");
+      siteInput.focus();
+      return;
+    }
     navigator.clipboard.writeText(promptBox.textContent)
       .then(function () { note.textContent = "Copied. Paste it into " + app().name + "."; note.classList.remove("bad"); })
       .catch(function () { note.textContent = "Clipboard refused — select the text above and copy it."; note.classList.add("bad"); });
