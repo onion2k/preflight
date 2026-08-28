@@ -780,7 +780,9 @@
   }
   /* Only the flow that matches the chosen app is shown. Hide every variant, then bring back
      the matching one — including "supported", which covers both tools and paste. */
-  [data-flow] { display: none; }
+  /* Descendant selector, deliberately: body itself carries data-flow, so a bare
+     [data-flow] rule hides the whole page the moment guide.js sets it. */
+  body [data-flow] { display: none; }
   body[data-flow="tools"] [data-flow="tools"],
   body[data-flow="paste"] [data-flow="paste"],
   body[data-flow="unsupported"] [data-flow="unsupported"],
