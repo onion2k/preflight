@@ -102,7 +102,7 @@
   }
 
   function toolsPrompt() {
-    return "Use the Preflight launch checklist at " + CHECKLIST + " to check " + site() + ".\n\n" +
+    return "Use the Preflight Checklist at " + CHECKLIST + " to check " + site() + ".\n\n" +
       "Open that page — it offers you tools.\n\n" +
       "Call set-target with " + site() + ", then work through the checks: call next-check, " +
       "carry out the recipe it gives you against my site, and record what you found with " +
@@ -118,7 +118,7 @@
 
   function pastePrompt() {
     const inline = inlineToggle.checked;
-    return "Use the Preflight launch checklist at " + CHECKLIST + " to check " + site() + ".\n\n" +
+    return "Use the Preflight Checklist at " + CHECKLIST + " to check " + site() + ".\n\n" +
       (inline
         ? "Here are the checks. Each has an id, what it is, and how to verify it:\n\n" + checksForPrompt() + "\n\n"
         : "Open that page and work from the list on it. If you cannot run its JavaScript, fetch " +

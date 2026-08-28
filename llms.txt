@@ -1,4 +1,4 @@
-# Preflight for Launch
+# Preflight Checklist
 
 > A pre-launch checklist for websites: 73 things worth verifying before a site goes public,
 > covering content, accessibility, security headers, crawler files, performance, error pages,

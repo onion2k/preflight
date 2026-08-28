@@ -1,4 +1,4 @@
-# Preflight for Launch
+# Preflight Checklist
 
 A pre-launch checklist for websites, as an installable, offline-first Progressive Web App.
 Twelve sections — content, accessibility (WCAG 2.2 AA), security headers, crawler files,

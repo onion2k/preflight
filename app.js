@@ -1,4 +1,4 @@
-// Preflight for Launch — renders the checklist from PREFLIGHT_CHECKS and keeps the results.
+// Preflight Checklist — renders the checklist from PREFLIGHT_CHECKS and keeps the results.
 //
 // Nothing here knows the content of a single check: sections, items, tables, the rail, the
 // meter and the scroll markers are all built from the data in checks.js.
@@ -6,7 +6,7 @@
   "use strict";
 
   // Bumped by tools/stamp.py together with the service worker cache name and version.json.
-  const BUILD = "v21";
+  const BUILD = "v22";
   const CHECKS = window.PREFLIGHT_CHECKS || [];
   const LEGACY_ORDER = window.PREFLIGHT_LEGACY_ORDER || [];
   const STORE = "preflight-results-v2";

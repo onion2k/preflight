@@ -1,5 +1,5 @@
 {
-  "name": "Preflight for Launch",
+  "name": "Preflight Checklist",
   "short_name": "Preflight",
   "description": "A pre-launch checklist for websites: content, accessibility, security, crawler files, performance, error pages, legal and launch day.",
   "start_url": ".",
