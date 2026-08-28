@@ -40,11 +40,11 @@
       setup: "Open the checklist inside ChatGPT's browser, not next to it in another window."
     },
     claude: {
-      name: "the Claude app",
+      name: "the Claude desktop app",
       short: "Claude",
       flow: "paste",
-      where: "in a chat window",
-      setup: "Any recent version. It needs to be able to fetch web pages."
+      where: "outside your browser",
+      setup: "Any recent version, with web access turned on so it can reach your site. Claude connects to MCP servers rather than reading tools from a web page, so it uses the checklist as data and hands its findings back as JSON."
     },
     other: {
       name: "your AI assistant",
@@ -84,7 +84,8 @@
   }
 
   function toolsPrompt() {
-    return "Open " + CHECKLIST + " and use the tools that page offers you.\n\n" +
+    return "Use the Preflight launch checklist at " + CHECKLIST + " to check " + site() + ".\n\n" +
+      "Open that page — it offers you tools.\n\n" +
       "Call set-target with " + site() + ", then work through the checks: call next-check, " +
       "carry out the recipe it gives you against my site, and record what you found with " +
       "record-result. Repeat until next-check says there is nothing left you can do.\n\n" +
@@ -99,13 +100,13 @@
 
   function pastePrompt() {
     const inline = inlineToggle.checked;
-    return "I am about to launch " + site() + " and I want you to check it against a " +
-      "pre-launch checklist.\n\n" +
+    return "Use the Preflight launch checklist at " + CHECKLIST + " to check " + site() + ".\n\n" +
       (inline
         ? "Here are the checks. Each has an id, what it is, and how to verify it:\n\n" + checksForPrompt() + "\n\n"
-        : "Fetch " + CHECKLIST + "checks.js — it lists every check as data. Use each item whose " +
-          "\"verify\" is \"agent\" or \"shared\"; each one has an id, a task and a recipe telling " +
-          "you exactly how to verify it. Ignore the ones marked \"human\".\n\n") +
+        : "Fetch " + CHECKLIST + "checks.json for the checklist itself — that page renders from " +
+          "data, so the data file is the thing to read. Use each item whose \"verify\" is " +
+          "\"agent\" or \"shared\"; each has an id, a task and a recipe telling you exactly how " +
+          "to verify it. Ignore the ones marked \"human\".\n\n") +
       "For each check, carry out the recipe against my site and decide: pass, fail, or na (not " +
       "applicable to this site).\n\n" +
       "Rules:\n" +

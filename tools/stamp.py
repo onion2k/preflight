@@ -10,6 +10,7 @@ Doing it by hand is how you end up debugging a cached script for ten minutes.
 """
 import json
 import re
+import subprocess
 import sys
 
 def current():
@@ -35,6 +36,13 @@ def stamp(version):
     open("index.html", "w").write(html)
 
     open("version.json", "w").write(json.dumps({"build": version}) + "\n")
+
+    # checks.json is generated from checks.js so an AI can fetch the data in one request.
+    try:
+        subprocess.run(["node", "tools/emit-json.mjs"], check=True)
+    except (OSError, subprocess.CalledProcessError) as error:
+        print("warning: could not regenerate checks.json (%s)" % error)
+
     print("stamped " + version)
 
 if __name__ == "__main__":

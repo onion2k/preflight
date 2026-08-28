@@ -25,7 +25,10 @@ back. Add an app by extending `APPS` in `guide.js`.
 | `webmcp.js` | Exposes the checklist to an AI agent as WebMCP tools. |
 | `state.js` | Saving, loading and sharing a run between browsers. |
 | `pwa.js` | Install prompt, update prompt, online/offline status. |
+| `checks.json` | The checklist as plain data for an AI to fetch. Generated — never edit it. |
+| `llms.txt` | The site explaining itself to an AI: where the data is and how to report back. |
 | `version.json` | The published build, fetched past the cache to detect a stale one. |
+| `tools/emit-json.mjs` | Writes `checks.json` from `checks.js`. Run by `stamp.py`. |
 | `tools/stamp.py` | Bumps the build across `sw.js`, `app.js` and `version.json` together. |
 | `manifest.webmanifest` | Name, icons, `standalone` display, theme colours, section shortcuts. |
 | `sw.js` | Service worker. Network-first (revalidating) for the page, its scripts and its data; cache-first for icons; stale-while-revalidate for webfonts. |
@@ -170,6 +173,12 @@ separate lists, and neither can see the other.
 - **Copy JSON** / paste box for moving a run by hand.
 
 Agents do the same through `share-results`, `export-results` and `import-results`.
+
+Which flow an assistant gets is decided by whether it can reach the tools at all. WebMCP is a
+browser API: the agent has to be running inside a browser with the page loaded. An assistant
+that can only fetch URLs — Claude Desktop, most chat assistants — never sees the tools, so it
+reads `checks.json` and returns the JSON above instead. MCP and WebMCP are different protocols
+despite the names; being an MCP client does not help here.
 
 Merging has one rule worth knowing: **your own ticks win.** A record you settled yourself is
 never overwritten by an incoming one for the same check, whoever recorded it. Between two
