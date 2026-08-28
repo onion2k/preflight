@@ -653,3 +653,93 @@
     text-decoration-color: var(--rule);
   }
   .headlink:hover { color: var(--ink); }
+
+  /* ---------- guide: quick start ---------- */
+  .quickstart { border-color: var(--go); }
+  .setup { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; }
+  .setup-field { display: flex; flex-direction: column; gap: 5px; flex: 1 1 220px; }
+  .setup-field span {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .setup-field input, .setup-field select {
+    font-family: var(--mono);
+    font-size: .88rem;
+    color: var(--ink);
+    background: var(--panel-2);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 9px 10px;
+    width: 100%;
+  }
+  .steps { counter-reset: step; list-style: none; padding-left: 0; }
+  /* Not a grid: a grid would make every bare text node in the item its own cell,
+     which breaks the sentence into one word per row. */
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 34px;
+    margin-top: 12px;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: .15em;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 22px;
+    text-align: center;
+    color: var(--panel);
+    background: var(--go);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+  }
+  .setup-note { font-size: .9rem; color: var(--ink-2); }
+  .promptwrap { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+  .prompthead {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .prompthead > span {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .inline-toggle {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    font-size: .82rem;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .inline-toggle[hidden] { display: none; }
+  #prompt-text {
+    font-family: var(--mono);
+    font-size: .8rem;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--panel-2);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--go);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 16px;
+    margin: 0;
+    max-height: 22em;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  /* Only the flow that matches the chosen app is shown. */
+  body[data-flow="tools"] [data-flow="paste"],
+  body[data-flow="paste"] [data-flow="tools"] { display: none; }

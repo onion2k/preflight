@@ -7,7 +7,10 @@ in `localStorage`, so progress survives a reload and an install.
 
 Live at **https://onion2k.github.io/preflight/** — with a plain-English guide at
 **[/guide.html](https://onion2k.github.io/preflight/guide.html)** for people launching a site
-they built with AI, who should not have to read this file to use the thing.
+they built with AI, who should not have to read this file to use the thing. The guide asks which
+AI app the reader uses and writes them a ready-to-paste prompt for it — assistants that run in
+the browser get the tool-driven flow, everything else gets a prompt that returns JSON to paste
+back. Add an app by extending `APPS` in `guide.js`.
 
 ## Files
 
@@ -15,6 +18,7 @@ they built with AI, who should not have to read this file to use the thing.
 | --- | --- |
 | `index.html` | The checklist shell: head and the elements the app renders into. No build step. |
 | `guide.html` | Plain-English guide for people launching a site they built with AI. |
+| `guide.js` | Tailors the guide to the reader's AI app and builds them a prompt. |
 | `styles.css` | Shared stylesheet for both pages. |
 | `checks.js` | The checklist as data — 12 sections, 73 items, each with a permanent id. |
 | `app.js` | Renders the checklist from that data and stores results. |

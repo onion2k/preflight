@@ -1,7 +1,7 @@
 // Preflight for Launch — service worker.
 // Bump CACHE when the shell changes; the old cache is dropped on activate.
-const CACHE = "preflight-shell-v13";
-const RUNTIME = "preflight-runtime-v13";
+const CACHE = "preflight-shell-v14";
+const RUNTIME = "preflight-runtime-v14";
 
 // version.json is deliberately absent: it is fetched from the network to detect this cache
 // being stale, so caching it would defeat the point.
@@ -13,6 +13,7 @@ const SHELL = [
   "./checks.js",
   "./app.js",
   "./state.js",
+  "./guide.js",
   "./webmcp.js",
   "./pwa.js",
   "./manifest.webmanifest",

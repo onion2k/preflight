@@ -12,6 +12,8 @@
 <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <link rel="stylesheet" href="./styles.css">
+<script src="./checks.js" defer></script>
+<script src="./guide.js" defer></script>
 </head>
 <body>
 
@@ -19,13 +21,73 @@
   <header class="masthead">
     <div class="eyebrow">Guide &middot; no technical background needed</div>
     <h1>How to Use Preflight</h1>
-    <p class="standfirst">You have built a website — probably with a lot of help from an AI — and
-    it works. Launching it is a different job from building it, and it is the part nobody shows
-    you. This is what to check before you put it in front of people, in the order that matters.</p>
+    <p class="standfirst">You built a website with an AI. Launching it is a different job from
+    building it, and it is the part nobody shows you — so hand that job to the AI as well. The
+    checklist knows how to verify 51 of its 73 checks; your assistant does the looking. Pick your
+    app below and it will tell you exactly what to do.</p>
     <a class="backlink" href="./">Open the checklist</a>
   </header>
 
   <div class="guide">
+
+
+    <section id="quickstart" class="quickstart">
+      <h2>Quick start</h2>
+      <p class="lede">Two minutes, three steps.</p>
+
+      <div class="setup">
+        <label class="setup-field">
+          <span>Your site</span>
+          <input id="site-url" type="url" inputmode="url" placeholder="yoursite.com" spellcheck="false">
+        </label>
+        <label class="setup-field">
+          <span>Your AI app</span>
+          <select id="app-choice">
+            <option value="chrome">Chrome's built-in assistant</option>
+            <option value="edge">Edge's built-in assistant</option>
+            <option value="brave">Brave Leo</option>
+            <option value="chatgpt">ChatGPT desktop app</option>
+            <option value="claude">Claude app</option>
+            <option value="other">Something else</option>
+          </select>
+        </label>
+      </div>
+
+      <ol class="steps">
+        <li data-flow="tools"><b>Open the checklist <span data-app-where></span></b>, so
+        <span data-app-name></span> is looking at the same page you are.</li>
+        <li data-flow="paste"><b>Copy the prompt below</b> and paste it into
+        <span data-app-name></span>.</li>
+
+        <li data-flow="tools"><b>Copy the prompt below</b> and paste it into
+        <span data-app-name></span>.</li>
+        <li data-flow="paste"><b>Let it work.</b> It reads the checklist, checks your site, and
+        tells you what failed.</li>
+
+        <li data-flow="tools"><b>Watch the ticks appear.</b> Findings land against each item with
+        the evidence behind them.</li>
+        <li data-flow="paste"><b>Paste its JSON back</b> into <i>Save, load or share this run</i>
+        on the checklist, and the findings land against each item.</li>
+      </ol>
+
+      <p class="setup-note" id="app-setup"></p>
+
+      <div class="promptwrap">
+        <div class="prompthead">
+          <span>The prompt</span>
+          <label class="inline-toggle" hidden>
+            <input type="checkbox" id="inline-checks">
+            <span>Include the checks in the prompt — for assistants that cannot browse the web</span>
+          </label>
+        </div>
+        <pre id="prompt-text"></pre>
+        <div class="panel-actions">
+          <button class="btn primary" type="button" id="copy-prompt">Copy prompt</button>
+          <a class="btn" href="./">Open the checklist</a>
+        </div>
+        <p class="panel-note" id="prompt-note"></p>
+      </div>
+    </section>
 
     <section id="what">
       <h2>What the checklist actually is</h2>
@@ -90,35 +152,49 @@
     </section>
 
     <section id="agent">
-      <h2>Getting an AI to do the mechanical half</h2>
-      <p>51 of the 73 checks are things an AI can verify by fetching your site and reading what
-      comes back. The checklist carries the exact instructions for each one, so you do not have to
-      know what a security header is to get one checked.</p>
-      <h3>The way that works best</h3>
-      <p>Open the checklist in a browser whose AI assistant can act on the page you are looking at
-      — Chrome or Edge with their built-in assistant, or Brave's Leo. Then ask it something like:</p>
-      <p class="said">Use the tools on this page to check https://yoursite.com. Work through the
-      agent-checkable items, record each result with the evidence, and tell me what failed.</p>
-      <p>It will work down the list, and its findings appear against the items with the actual
-      evidence — the header it read, the status code it got, the number it measured. A finding
-      that fails does <b>not</b> tick the box: a check that ran and did not pass is worse than one
-      nobody has looked at, so it stays open and shows a red mark.</p>
-      <h3>If your AI is somewhere else</h3>
-      <p>An assistant in a different app — ChatGPT Desktop, or a chat window in another browser —
-      keeps its own copy of the results, because browsers keep each site's data separate. Ask it
-      for a share link when it finishes, open that link in your own browser, and its findings
-      merge into your list. Anything you had already ticked yourself stays as you left it.</p>
+      <h2>How this works with <span data-app-name></span></h2>
+      <p>51 of the 73 checks are things an assistant can settle by fetching your site and reading
+      what comes back — headers, status codes, the sitemap, the accessibility scan. Each one
+      carries its own instructions, so you do not need to know what a security header is to get
+      one checked.</p>
+
+      <div data-flow="tools">
+        <p><span data-app-name></span> runs <span data-app-where></span>, which means it can use
+        the checklist's own tools: it asks the page what to check next, does it, and writes the
+        result back. You watch the list fill in as it goes. Nothing to copy, nothing to paste.</p>
+        <p>Keep the checklist tab in front of it while you ask — an assistant acts on the page it
+        is looking at, so if you have switched tabs it may be reading something else.</p>
+      </div>
+
+      <div data-flow="paste">
+        <p><span data-app-name></span> runs <span data-app-where></span>, so it cannot write into
+        the checklist directly — browsers keep each site's data to themselves. The prompt above
+        handles that: it asks for the findings as a block of JSON, and the checklist's <i>Save,
+        load or share this run</i> panel takes that block and files every finding against the
+        right check.</p>
+        <p>You only have to do that once per run, at the end.</p>
+      </div>
+
+      <h3>What good looks like</h3>
+      <p>Every result should arrive with evidence — the actual header it read, the status code it
+      got, the number it measured. A check that <b>fails</b> does not get ticked: something that
+      was looked at and found wanting is worse than something nobody has looked at, so it stays
+      open with a red mark against it.</p>
+
       <h3>What to be sceptical about</h3>
-      <p>An AI saying "passed" is a claim, not proof. That is why every result it records has to
-      carry evidence. If a result has no evidence behind it, treat it as unchecked, and spot-check
-      a couple of the ones that matter most to you.</p>
+      <p>An assistant saying "passed" is a claim, not proof. That is what the evidence is for. If a
+      result arrives with vague evidence, or evidence that just repeats the check back at you,
+      treat it as unchecked — and spot-check a couple of the ones that matter most to you.</p>
+      <p>It also cannot settle the 22 checks that need a person, and should not pretend otherwise.
+      If it ticks off "proofread every page", it is making things up.</p>
     </section>
 
     <section id="failures">
       <h2>Something failed. Now what?</h2>
       <p>Most findings are fixed in the same place you built the site. The evidence line is the
       useful part — it is the specific, quotable fact that turns a vague worry into a task.</p>
-      <p>Copy the check and its evidence into whatever built your site, and ask plainly:</p>
+      <p>Copy the check and its evidence into whatever built your site — <span data-app-short></span>
+      or otherwise — and ask plainly:</p>
       <p class="said">My site fails this check: "Content-Security-Policy in enforcing mode". What
       was found: the live header is only frame-ancestors 'none', the rest of the policy is in a
       meta tag. Explain what that means in plain English, tell me whether it matters for my site,
