@@ -174,11 +174,14 @@ separate lists, and neither can see the other.
 
 Agents do the same through `share-results`, `export-results` and `import-results`.
 
-Which flow an assistant gets is decided by whether it can reach the tools at all. WebMCP is a
-browser API: the agent has to be running inside a browser with the page loaded. An assistant
-that can only fetch URLs — Claude Desktop, most chat assistants — never sees the tools, so it
-reads `checks.json` and returns the JSON above instead. MCP and WebMCP are different protocols
-despite the names; being an MCP client does not help here.
+Which flow an assistant gets depends on *whose* browser it is working in, which is a different
+question from whether it has one. Chrome, Edge and Leo drive the browser the person is looking
+at, so a tool call lands in their list. Claude Desktop and ChatGPT Desktop have browsers of
+their own: they read the checklist perfectly well, and anything they record lands in storage
+the person will never see. Those get the prompt that ends in a share link or a JSON block.
+
+`checks.json` exists for assistants that only make plain HTTP requests, with no JavaScript —
+the page renders its checks from data, so a bare fetch of the URL returns a shell.
 
 Merging has one rule worth knowing: **your own ticks win.** A record you settled yourself is
 never overwritten by an incoming one for the same check, whoever recorded it. Between two

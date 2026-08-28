@@ -30,10 +30,11 @@ def stamp(version):
     app = re.sub(r'const BUILD = "v\d+";', 'const BUILD = "%s";' % version, app)
     open("app.js", "w").write(app)
 
-    html = open("index.html").read()
-    html = re.sub(r'<span id="build">[^<]*</span>',
-                  '<span id="build">build %s</span>' % version, html)
-    open("index.html", "w").write(html)
+    for page in ("index.html", "guide.html"):
+        html = open(page).read()
+        html = re.sub(r'<span id="build">[^<]*</span>',
+                      '<span id="build">build %s</span>' % version, html)
+        open(page, "w").write(html)
 
     open("version.json", "w").write(json.dumps({"build": version}) + "\n")
 

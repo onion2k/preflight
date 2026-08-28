@@ -61,7 +61,7 @@
 
         <li data-flow="tools"><b>Copy the prompt below</b> and paste it into
         <span data-app-name></span>.</li>
-        <li data-flow="paste"><b>Let it work.</b> It reads the checklist, checks your site, and
+        <li data-flow="paste"><b>Let it work.</b> It opens the checklist, checks your site, and
         tells you what failed.</li>
 
         <li data-flow="tools"><b>Watch the ticks appear.</b> Findings land against each item with
@@ -167,12 +167,16 @@
       </div>
 
       <div data-flow="paste">
-        <p><span data-app-name></span> runs <span data-app-where></span>, so it cannot write into
-        the checklist directly — browsers keep each site's data to themselves. The prompt above
-        handles that: it asks for the findings as a block of JSON, and the checklist's <i>Save,
-        load or share this run</i> panel takes that block and files every finding against the
-        right check.</p>
-        <p>You only have to do that once per run, at the end.</p>
+        <p><span data-app-name></span> runs <span data-app-where></span>. It can read the whole
+        checklist perfectly well — what it cannot do is write into <i>your</i> copy, because
+        browsers keep each site's data to themselves and its browser is not yours. Ask it to
+        audit your site and you get an excellent report and an empty checklist.</p>
+        <p>The prompt above closes that gap: it asks for the findings as a block of JSON, and the
+        checklist's <i>Save, load or share this run</i> panel files every one against the right
+        check, evidence included. One paste, once, at the end.</p>
+        <p>It also asks the assistant to check whether the page offered it tools, and if so to
+        finish with a share link instead — same destination, less to copy. That costs nothing if
+        it cannot, and saves you a step if it can.</p>
       </div>
 
       <h3>What good looks like</h3>
@@ -284,7 +288,7 @@
   </div>
 
   <footer class="foot">
-    <span>Preflight &middot; guide</span>
+    <span id="build">build v17</span>
     <span>Nothing on this page is sent anywhere</span>
   </footer>
 </div>
