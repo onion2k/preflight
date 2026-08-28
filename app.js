@@ -6,7 +6,7 @@
   "use strict";
 
   // Bumped by tools/stamp.py together with the service worker cache name and version.json.
-  const BUILD = "v18";
+  const BUILD = "v19";
   const CHECKS = window.PREFLIGHT_CHECKS || [];
   const LEGACY_ORDER = window.PREFLIGHT_LEGACY_ORDER || [];
   const STORE = "preflight-results-v2";

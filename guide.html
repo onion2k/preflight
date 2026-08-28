@@ -43,12 +43,17 @@
         <label class="setup-field">
           <span>Your AI app</span>
           <select id="app-choice">
-            <option value="chrome">Chrome's built-in assistant</option>
-            <option value="edge">Edge's built-in assistant</option>
-            <option value="brave">Brave Leo</option>
-            <option value="chatgpt">ChatGPT desktop app</option>
-            <option value="claude">Claude desktop app</option>
-            <option value="other">Something else</option>
+            <optgroup label="Works today">
+              <option value="claudecode">Claude Code (Claude desktop app)</option>
+              <option value="chatgpt">ChatGPT desktop app</option>
+              <option value="brave">Brave Leo</option>
+              <option value="other">Something else</option>
+            </optgroup>
+            <optgroup label="Not yet">
+              <option value="claudechat">Claude chat (Claude desktop app)</option>
+              <option value="chrome">Chrome's built-in assistant</option>
+              <option value="edge">Edge's built-in assistant</option>
+            </optgroup>
           </select>
         </label>
       </div>
@@ -75,15 +80,7 @@
 
       <p class="setup-note" id="app-setup"></p>
 
-      <div class="notice" data-flow="unsupported">
-        <p><b><span data-app-name></span> cannot run this audit yet.</b> It will tell you it has no
-        way to open your site or read response headers, and it does not use the tools this page
-        offers it. Nothing you can configure changes that today.</p>
-        <p>The apps that do work right now: <b>the Claude desktop app</b> and <b>the ChatGPT
-        desktop app</b>, both of which have their own browser, and <b>Brave Leo</b>, which works in
-        the browser you are already using. Choose one above and the prompt below will be written
-        for it.</p>
-      </div>
+      <div class="notice" data-flow="unsupported" id="blocked-note"></div>
 
       <div class="promptwrap" data-flow="supported">
         <div class="prompthead">
@@ -193,12 +190,12 @@
       </div>
 
       <div data-flow="unsupported">
-        <p>Assistants built into browsers are the obvious place for this to work, and one day it
-        will be the easiest route of all: the assistant is already looking at the page, and the
-        page is already offering it the tools. Chrome and Edge have switched the browser side on —
-        the part that lets a page offer tools at all — but their assistants do not yet call them.</p>
-        <p>Until they do, use an assistant with its own browser and let it hand the results back.
-        Pick one from the dropdown above.</p>
+        <p>Checking a site means making real requests to it and reading what comes back. An
+        assistant that can only answer from what it already knows cannot do that, however capable
+        it is at everything else — and one that can browse but chooses not to will give you a
+        confident answer built on nothing.</p>
+        <p>So the list of apps that work is shorter than you would expect, and it is about
+        plumbing rather than intelligence. Pick one of the ones above that has it.</p>
       </div>
 
       <h3>What good looks like</h3>
@@ -310,7 +307,7 @@
   </div>
 
   <footer class="foot">
-    <span id="build">build v18</span>
+    <span id="build">build v19</span>
     <span>Nothing on this page is sent anywhere</span>
   </footer>
 </div>

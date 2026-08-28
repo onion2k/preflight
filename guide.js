@@ -16,14 +16,22 @@
       short: "Chrome",
       flow: "unsupported",
       where: "in the same browser as the checklist",
-      setup: "This site already offers the tools — Chrome's assistant does not yet pick them up, and cannot fetch response headers from your site either. That will change; today it will tell you it cannot help."
+      blocked: "<p><b>Chrome's assistant cannot run this audit yet.</b> This site already offers " +
+        "it the tools; it does not call them, and it cannot fetch response headers from your site " +
+        "either. It will tell you it is unable to help.</p>" +
+        "<p>Use an assistant with a browser of its own — <b>Claude Code</b> or the <b>ChatGPT " +
+        "desktop app</b> — or <b>Brave Leo</b>, which works in the browser you are already using. " +
+        "Pick one above and the prompt below will be written for it.</p>"
     },
     edge: {
       name: "Edge's built-in assistant",
       short: "Edge",
       flow: "unsupported",
       where: "in the same browser as the checklist",
-      setup: "Same as Chrome: the tools are offered to it, but its assistant does not use them yet."
+      blocked: "<p><b>Edge's assistant cannot run this audit yet</b>, for the same reason as " +
+        "Chrome's: the tools are offered to it and it does not call them.</p>" +
+        "<p>Use <b>Claude Code</b>, the <b>ChatGPT desktop app</b> or <b>Brave Leo</b> instead. " +
+        "Pick one above and the prompt below will be written for it.</p>"
     },
     brave: {
       name: "Brave Leo",
@@ -39,12 +47,22 @@
       where: "in its own built-in browser",
       setup: "Open the checklist inside ChatGPT's browser, not next to it in another window."
     },
-    claude: {
-      name: "the Claude desktop app",
-      short: "Claude",
+    claudecode: {
+      name: "Claude Code",
+      short: "Claude Code",
       flow: "paste",
       where: "in its own browser pane",
-      setup: "Any recent version. Claude opens the checklist in its own browser, so it can read the whole list — but that browser is not yours, so its findings have to come back to you as JSON."
+      setup: "In the Claude desktop app, switch to Code — Chat will not open the browser. Code opens the checklist in a browser of its own, so it reads the whole list, but that browser is not yours: its findings come back to you as a link or a block of JSON."
+    },
+    claudechat: {
+      name: "Claude chat",
+      short: "Claude",
+      flow: "unsupported",
+      blocked: "<p><b>Chat does not open the built-in browser.</b> It will answer from what it can " +
+        "read, without opening your site, so it cannot check response headers, status codes or " +
+        "anything else that needs a real request.</p>" +
+        "<p><b>Switch to Code in the same app</b> — the desktop app has both — and pick " +
+        "<i>Claude Code</i> above. Everything else stays the same.</p>"
     },
     other: {
       name: "your AI assistant",
@@ -145,7 +163,13 @@
       node.textContent = chosen.where;
     });
     const setup = document.getElementById("app-setup");
-    if (setup) setup.innerHTML = chosen.setup;
+    if (setup) {
+      setup.innerHTML = chosen.setup || "";
+      setup.hidden = !chosen.setup;
+    }
+    // Each blocked app explains its own situation; a shared notice would be wrong for all of them.
+    const blocked = document.getElementById("blocked-note");
+    if (blocked) blocked.innerHTML = chosen.blocked || "";
 
     inlineToggle.closest("label").hidden = chosen.flow !== "paste";
     if (chosen.flow !== "unsupported") {
@@ -156,7 +180,9 @@
   }
 
   try {
-    const saved = localStorage.getItem(STORE);
+    // "claude" was one option before the app's Chat and Code modes turned out to differ.
+    const migrate = { claude: "claudecode" };
+    const saved = migrate[localStorage.getItem(STORE)] || localStorage.getItem(STORE);
     if (saved && APPS[saved]) select.value = saved;
   } catch (e) {}
 
