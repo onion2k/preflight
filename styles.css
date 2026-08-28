@@ -276,7 +276,9 @@
   }
   nav.rail a.done .count { color: var(--go); }
 
-  main { display: flex; flex-direction: column; gap: 40px; }
+  /* Both of these are flex columns: the sections live inside #checklist, so without it the
+     gap would apply to that one wrapper and every section would sit flush against the next. */
+  main, #checklist { display: flex; flex-direction: column; gap: 40px; }
 
   section.block {
     background: var(--panel);
